@@ -1,5 +1,7 @@
 from src.DataStore import DataStore
-from src.SongBank import SongBank
+from src.ListAdder import ListAdder
+from src.Voter import Voter
+from src.Scorer import Scorer
 import pytest
 
 def reset():
@@ -10,21 +12,17 @@ def reset():
     assert set(data_store.get_player_lists()) == set()
 
 def adding_lists():
-    song_bank = SongBank(True)
+    list_adder = ListAdder(True)
     data_store = DataStore(True)
 
-    assert song_bank.get_score() == {}
-
-    song_bank.get_score() == {}
-
-    song_bank.add_player("A", ["1", "2", "4"])
+    list_adder.add_player("A", ["1", "2", "4"])
     assert set(data_store.get_players("1")) == {"A"}
     assert set(data_store.get_players("2")) == {"A"}
     assert set(data_store.get_players("3")) == set()
     assert set(data_store.get_players("4")) == {"A"}
     assert set(data_store.get_players("5")) == set()
     assert set(data_store.get_players("6")) == set()
-    song_bank.add_player("B", ["1", "2", "3", "5"])
+    list_adder.add_player("B", ["1", "2", "3", "5"])
     assert set(data_store.get_players("1")) == {"A", "B"}
     assert set(data_store.get_players("2")) == {"A", "B"}
     assert set(data_store.get_players("3")) == {"B"}
@@ -32,10 +30,10 @@ def adding_lists():
     assert set(data_store.get_players("5")) == {"B"}
     assert set(data_store.get_players("6")) == set()
     #indicating that C has a type in song 1, and so manually merge the typo 1' into 1
-    song_bank.add_player("C", ["1'", "3", "6"])
+    list_adder.add_player("C", ["1'", "3", "6"])
     assert set(data_store.get_players("1")) == {"A", "B"}
     assert set(data_store.get_players("1'")) == {"C"}
-    song_bank.merge_songs("1", "1'")
+    list_adder.merge_songs("1", "1'")
     assert set(data_store.get_players("1")) == {"A", "B", "C"}
     assert set(data_store.get_players("2")) == {"A", "B"}
     assert set(data_store.get_players("3")) == {"B", "C"}
@@ -47,24 +45,24 @@ def adding_lists():
     assert set(data_store.get_songs()) == {"1", "2", "3", "4", "5", "6"}
 
 def voting():
-    song_bank = SongBank(True)
+    voter = Voter(True)
     data_store = DataStore(True)
 
-    song_bank.add_votes(["1", "2", "4"])
+    voter.add_votes(["1", "2", "4"])
     assert data_store.get_votes("1") == 1
     assert data_store.get_votes("2") == 1
     assert data_store.get_votes("3") == 0
     assert data_store.get_votes("4") == 1
     assert data_store.get_votes("5") == 0
     assert data_store.get_votes("6") == 0
-    song_bank.add_votes(["1", "2", "3", "4", "5"])
+    voter.add_votes(["1", "2", "3", "4", "5"])
     assert data_store.get_votes("1") == 2
     assert data_store.get_votes("2") == 2
     assert data_store.get_votes("3") == 1
     assert data_store.get_votes("4") == 2
     assert data_store.get_votes("5") == 1
     assert data_store.get_votes("6") == 0
-    song_bank.add_votes(["1", "2", "3", "4", "5", "6"])
+    voter.add_votes(["1", "2", "3", "4", "5", "6"])
     assert data_store.get_votes("1") == 3
     assert data_store.get_votes("2") == 3
     assert data_store.get_votes("3") == 2
@@ -73,40 +71,38 @@ def voting():
     assert data_store.get_votes("6") == 1
 
 def scoring():
-    song_bank = SongBank(True)
+    scorer = Scorer(True)
 
-    final_score = song_bank.get_score()
+    assert scorer.song_scores["1"] == 2/3
+    assert scorer.song_scores["2"] == 1
+    assert scorer.song_scores["3"] == 1/2
+    assert scorer.song_scores["4"] == 2
+    assert scorer.song_scores["5"] == 1
+    assert scorer.song_scores["6"] == 0
 
-    assert song_bank.song_scores["1"] == 2/3
-    assert song_bank.song_scores["2"] == 1
-    assert song_bank.song_scores["3"] == 1/2
-    assert song_bank.song_scores["4"] == 2
-    assert song_bank.song_scores["5"] == 1
-    assert song_bank.song_scores["6"] == 0
+    assert "A" in scorer.player_score
+    assert set(scorer.player_score["A"].songs.keys()) == {"1", "2", "4"}
+    assert scorer.player_score["A"].songs["1"] == 2/3
+    assert scorer.player_score["A"].songs["2"] == 1
+    assert scorer.player_score["A"].songs["4"] == 2
+    assert scorer.player_score["A"].total == 11/3
 
-    assert "A" in final_score
-    assert set(final_score["A"].songs.keys()) == {"1", "2", "4"}
-    assert final_score["A"].songs["1"] == 2/3
-    assert final_score["A"].songs["2"] == 1
-    assert final_score["A"].songs["4"] == 2
-    assert final_score["A"].total == 11/3
+    assert "B" in scorer.player_score
+    assert set(scorer.player_score["B"].songs.keys()) == {"1", "2", "3", "5"}
+    assert scorer.player_score["B"].songs["1"] == 2/3
+    assert scorer.player_score["B"].songs["2"] == 1
+    assert scorer.player_score["B"].songs["3"] == 1/2
+    assert scorer.player_score["B"].songs["5"] == 1
+    assert scorer.player_score["B"].total == 19/6
 
-    assert "B" in final_score
-    assert set(final_score["B"].songs.keys()) == {"1", "2", "3", "5"}
-    assert final_score["B"].songs["1"] == 2/3
-    assert final_score["B"].songs["2"] == 1
-    assert final_score["B"].songs["3"] == 1/2
-    assert final_score["B"].songs["5"] == 1
-    assert final_score["B"].total == 19/6
-
-    assert "C" in final_score
-    assert set(final_score["C"].songs.keys()) == {"1", "3", "6"}
-    assert final_score["C"].songs["1"] == 2/3
-    assert final_score["C"].songs["3"] == 1/2
-    assert final_score["C"].songs["6"] == 0
-    assert final_score["C"].total == pytest.approx(7/6)
+    assert "C" in scorer.player_score
+    assert set(scorer.player_score["C"].songs.keys()) == {"1", "3", "6"}
+    assert scorer.player_score["C"].songs["1"] == 2/3
+    assert scorer.player_score["C"].songs["3"] == 1/2
+    assert scorer.player_score["C"].songs["6"] == 0
+    assert scorer.player_score["C"].total == pytest.approx(7/6)
     
-    assert song_bank.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
+    assert scorer.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
 def test_song_bank():
     '''

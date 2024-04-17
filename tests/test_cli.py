@@ -1,21 +1,22 @@
-import cli
+from cli import CLI, format_title, find_arguments, get_song_youtube_link
 
 def test_format_title():
-    assert cli.format_title("A-B") == "A - B"
-    assert cli.format_title("A-B-C") == "A - B-C"
-    assert cli.format_title(" A-B ") == "A - B"
-    assert cli.format_title("A   -   B") == "A - B"
+    assert format_title("A-B") == "A - B"
+    assert format_title("A-B-C") == "A - B-C"
+    assert format_title(" A-B ") == "A - B"
+    assert format_title("A   -   B") == "A - B"
 
 def test_find_arguments():
-    assert cli.find_arguments("merge 1 1'") == ("merge", "1 1'")
-    assert cli.find_arguments("show-score") == ("show-score", None)
-    assert cli.find_arguments("add-list person song 1, song 2") == ("add-list", "person song 1, song 2")
+    assert find_arguments("merge 1 1'") == ("merge", "1 1'")
+    assert find_arguments("show-score") == ("show-score", None)
+    assert find_arguments("add-list person song 1, song 2") == ("add-list", "person song 1, song 2")
 
 def test_youtube():
     song_title = "Barrett's Privateers - Stan Rogers"
-    assert cli.get_song_youtube_link(song_title) == "https://www.youtube.com/results?search_query=Barrett%27s+Privateers+-+Stan+Rogers"
+    assert get_song_youtube_link(song_title) == "https://www.youtube.com/results?search_query=Barrett%27s+Privateers+-+Stan+Rogers"
 
 def test_run_command():
+    cli = CLI(True)
     cli.run_command("reset", None)
 
     assert cli.run_command("songs", None) == ""
