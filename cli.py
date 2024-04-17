@@ -1,4 +1,5 @@
 from src.DataStore import DataStore
+from src.DataViewer import DataViewer
 from src.ListAdder import ListAdder
 from src.Voter import Voter
 from src.Scorer import Scorer
@@ -37,7 +38,7 @@ def get_song_youtube_link(song_title: str) -> str:
 class CLI:
     def __init__(self, is_test=False):
         self.is_test = is_test
-        self.data_store = DataStore(is_test)
+        self.data_viewer = DataViewer(is_test)
         self.phase = None
         self.check_phase(Phase.ADD_LIST)
 
@@ -72,19 +73,19 @@ class CLI:
                 arguments = command_help["arguments"] if command_help["arguments"] else ""
                 return "Phase: {}\nArguments: {}\nDescription: {}".format(phase, arguments, command_help["description"])
             case "reset":
-                self.data_store.reset_tables()
+                DataStore(self.is_test).reset_tables()
                 return "all data wiped"
             case "songs":
-                songs = list(self.data_store.get_songs())
+                songs = list(self.data_viewer.get_songs())
                 return "\n".join(str(i) + " - " + songs[i] + " (" + get_song_youtube_link(songs[i]) + ")" for i in range(len(songs)))
             case "players":
-                players = self.data_store.get_all_players()
+                players = self.data_viewer.get_all_players()
                 return ", ".join(players)
             case "votes":
-                songs = list(self.data_store.get_songs())
-                return "\n".join(song + ": " + str(self.data_store.get_votes(song)) for song in songs)
+                songs = list(self.data_viewer.get_songs())
+                return "\n".join(song + ": " + str(self.data_viewer.get_votes(song)) for song in songs)
             case "youtube":
-                songs = list(self.data_store.get_songs())
+                songs = list(self.data_viewer.get_songs())
                 song_title = songs[int(arguments)]
                 return get_song_youtube_link(song_title)
             case "list":
@@ -93,22 +94,22 @@ class CLI:
                 return "added songs for player " + player
             case "merge":
                 index1, index2 = arguments.split()
-                songs = list(self.data_store.get_songs())
+                songs = list(self.data_viewer.get_songs())
                 self.list_adder.merge_songs(songs[int(index1)], songs[int(index2)])
                 return "merged song {} into song {}".format(songs[int(index1)], songs[int(index2)])
             case "vote":
                 votes = set(arguments.split())
-                songs = list(self.data_store.get_songs())
+                songs = list(self.data_viewer.get_songs())
                 if len(votes) > len(songs):
                     raise IndexError()
                 self.voter.add_votes([songs[int(i)] for i in votes])
                 return "added votes for {}".format(", ".join(songs[int(i)] for i in votes))
             case "vote-by-song":
-                songs = list(self.data_store.get_songs())
+                songs = list(self.data_viewer.get_songs())
                 index, votes = arguments.split()
                 song = songs[int(index)]
                 self.voter.add_votes_to_song(song, int(votes))
-                return "song {} now has {} votes".format(song, self.data_store.get_votes(song))
+                return "song {} now has {} votes".format(song, self.data_viewer.get_votes(song))
             case "tally":
                 return "\n".join(player + " - " + str(score) for player, score in self.scorer.make_tally_board())
             case "detail":

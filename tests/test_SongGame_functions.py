@@ -1,4 +1,5 @@
 from src.DataStore import DataStore
+from src.DataViewer import DataViewer
 from src.ListAdder import ListAdder
 from src.Voter import Voter
 from src.Scorer import Scorer
@@ -13,62 +14,62 @@ def reset():
 
 def adding_lists():
     list_adder = ListAdder(True)
-    data_store = DataStore(True)
+    data_viewer = DataViewer(True)
 
     list_adder.add_player("A", ["1", "2", "4"])
-    assert set(data_store.get_players("1")) == {"A"}
-    assert set(data_store.get_players("2")) == {"A"}
-    assert set(data_store.get_players("3")) == set()
-    assert set(data_store.get_players("4")) == {"A"}
-    assert set(data_store.get_players("5")) == set()
-    assert set(data_store.get_players("6")) == set()
+    assert set(data_viewer.get_players("1")) == {"A"}
+    assert set(data_viewer.get_players("2")) == {"A"}
+    assert set(data_viewer.get_players("3")) == set()
+    assert set(data_viewer.get_players("4")) == {"A"}
+    assert set(data_viewer.get_players("5")) == set()
+    assert set(data_viewer.get_players("6")) == set()
     list_adder.add_player("B", ["1", "2", "3", "5"])
-    assert set(data_store.get_players("1")) == {"A", "B"}
-    assert set(data_store.get_players("2")) == {"A", "B"}
-    assert set(data_store.get_players("3")) == {"B"}
-    assert set(data_store.get_players("4")) == {"A"}
-    assert set(data_store.get_players("5")) == {"B"}
-    assert set(data_store.get_players("6")) == set()
+    assert set(data_viewer.get_players("1")) == {"A", "B"}
+    assert set(data_viewer.get_players("2")) == {"A", "B"}
+    assert set(data_viewer.get_players("3")) == {"B"}
+    assert set(data_viewer.get_players("4")) == {"A"}
+    assert set(data_viewer.get_players("5")) == {"B"}
+    assert set(data_viewer.get_players("6")) == set()
     #indicating that C has a type in song 1, and so manually merge the typo 1' into 1
     list_adder.add_player("C", ["1'", "3", "6"])
-    assert set(data_store.get_players("1")) == {"A", "B"}
-    assert set(data_store.get_players("1'")) == {"C"}
+    assert set(data_viewer.get_players("1")) == {"A", "B"}
+    assert set(data_viewer.get_players("1'")) == {"C"}
     list_adder.merge_songs("1", "1'")
-    assert set(data_store.get_players("1")) == {"A", "B", "C"}
-    assert set(data_store.get_players("2")) == {"A", "B"}
-    assert set(data_store.get_players("3")) == {"B", "C"}
-    assert set(data_store.get_players("4")) == {"A"}
-    assert set(data_store.get_players("5")) == {"B"}
-    assert set(data_store.get_players("6")) == {"C"}
+    assert set(data_viewer.get_players("1")) == {"A", "B", "C"}
+    assert set(data_viewer.get_players("2")) == {"A", "B"}
+    assert set(data_viewer.get_players("3")) == {"B", "C"}
+    assert set(data_viewer.get_players("4")) == {"A"}
+    assert set(data_viewer.get_players("5")) == {"B"}
+    assert set(data_viewer.get_players("6")) == {"C"}
 
-    assert set(data_store.get_all_players()) == {"A", "B", "C"}
-    assert set(data_store.get_songs()) == {"1", "2", "3", "4", "5", "6"}
+    assert set(data_viewer.get_all_players()) == {"A", "B", "C"}
+    assert set(data_viewer.get_songs()) == {"1", "2", "3", "4", "5", "6"}
 
 def voting():
     voter = Voter(True)
-    data_store = DataStore(True)
+    data_viewer = DataViewer(True)
 
     voter.add_votes(["1", "2", "4"])
-    assert data_store.get_votes("1") == 1
-    assert data_store.get_votes("2") == 1
-    assert data_store.get_votes("3") == 0
-    assert data_store.get_votes("4") == 1
-    assert data_store.get_votes("5") == 0
-    assert data_store.get_votes("6") == 0
+    assert data_viewer.get_votes("1") == 1
+    assert data_viewer.get_votes("2") == 1
+    assert data_viewer.get_votes("3") == 0
+    assert data_viewer.get_votes("4") == 1
+    assert data_viewer.get_votes("5") == 0
+    assert data_viewer.get_votes("6") == 0
     voter.add_votes(["1", "2", "3", "4", "5"])
-    assert data_store.get_votes("1") == 2
-    assert data_store.get_votes("2") == 2
-    assert data_store.get_votes("3") == 1
-    assert data_store.get_votes("4") == 2
-    assert data_store.get_votes("5") == 1
-    assert data_store.get_votes("6") == 0
+    assert data_viewer.get_votes("1") == 2
+    assert data_viewer.get_votes("2") == 2
+    assert data_viewer.get_votes("3") == 1
+    assert data_viewer.get_votes("4") == 2
+    assert data_viewer.get_votes("5") == 1
+    assert data_viewer.get_votes("6") == 0
     voter.add_votes(["1", "2", "3", "4", "5", "6"])
-    assert data_store.get_votes("1") == 3
-    assert data_store.get_votes("2") == 3
-    assert data_store.get_votes("3") == 2
-    assert data_store.get_votes("4") == 3
-    assert data_store.get_votes("5") == 2
-    assert data_store.get_votes("6") == 1
+    assert data_viewer.get_votes("1") == 3
+    assert data_viewer.get_votes("2") == 3
+    assert data_viewer.get_votes("3") == 2
+    assert data_viewer.get_votes("4") == 3
+    assert data_viewer.get_votes("5") == 2
+    assert data_viewer.get_votes("6") == 1
 
 def scoring():
     scorer = Scorer(True)
@@ -104,7 +105,7 @@ def scoring():
     
     assert scorer.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
-def test_song_bank():
+def test_song_game_functions():
     '''
     songs:
     song 1: on 3 lists, 3 votes
