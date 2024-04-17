@@ -17,16 +17,6 @@ def adding_lists():
 
     song_bank.get_score() == {}
 
-    '''
-    songs:
-    song 1: on 3 lists, 3 votes
-    song 2: on 2 lists, 3 votes
-    song 3: on 2 lists, 2 votes
-    song 4: on 1 list, 3 votes
-    song 5: on 1 list, 2 votes
-    song 6: on 1 list, 1 vote  
-    '''
-
     song_bank.add_player("A", ["1", "2", "4"])
     assert set(data_store.get_players("1")) == {"A"}
     assert set(data_store.get_players("2")) == {"A"}
@@ -119,6 +109,21 @@ def scoring():
     assert song_bank.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
 def test_song_bank():
+    '''
+    songs:
+    song 1: on 3 lists, 3 votes
+    song 2: on 2 lists, 3 votes
+    song 3: on 2 lists, 2 votes
+    song 4: on 1 list,  3 votes
+    song 5: on 1 list,  2 votes
+    song 6: on 1 list,  1 vote
+
+    players:
+    player A: list is 1, 2, 4
+    player B: list is 1, 2, 3, 5
+    player C: list is 1, 3, 6
+    '''
+
     reset()
     adding_lists()
     voting()
