@@ -2,15 +2,20 @@ from src.DataStore import DataStore
 from src.SongBank import SongBank
 import pytest
 
-def test_song_bank():
+def reset():
     data_store = DataStore(True)
     data_store.reset_tables()
     assert set(data_store.get_songs()) == set()
     assert set(data_store.get_all_players()) == set()
     assert set(data_store.get_player_lists()) == set()
+
+def adding_lists():
     song_bank = SongBank(True)
+    data_store = DataStore(True)
 
     assert song_bank.get_score() == {}
+
+    song_bank.get_score() == {}
 
     '''
     songs:
@@ -51,6 +56,10 @@ def test_song_bank():
     assert set(data_store.get_all_players()) == {"A", "B", "C"}
     assert set(data_store.get_songs()) == {"1", "2", "3", "4", "5", "6"}
 
+def voting():
+    song_bank = SongBank(True)
+    data_store = DataStore(True)
+
     song_bank.add_votes(["1", "2", "4"])
     assert data_store.get_votes("1") == 1
     assert data_store.get_votes("2") == 1
@@ -72,6 +81,9 @@ def test_song_bank():
     assert data_store.get_votes("4") == 3
     assert data_store.get_votes("5") == 2
     assert data_store.get_votes("6") == 1
+
+def scoring():
+    song_bank = SongBank(True)
 
     final_score = song_bank.get_score()
 
@@ -106,7 +118,9 @@ def test_song_bank():
     
     assert song_bank.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
-    data_store.reset_tables()
-    assert set(data_store.get_songs()) == set()
-    assert set(data_store.get_all_players()) == set()
-    assert set(data_store.get_player_lists()) == set()
+def test_song_bank():
+    reset()
+    adding_lists()
+    voting()
+    scoring()
+    reset()
