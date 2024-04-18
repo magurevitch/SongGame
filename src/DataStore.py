@@ -4,10 +4,10 @@ import sys
 class DataStore:
     #assuming pytest is only in modules if one is running tests
     database = "test_song_game.db" if "pytest" in sys.modules else "song_game.db"
-    def __init__(self):
-        self.connection = sqlite3.connect(self.database)
-        self.cursor = self.connection.cursor()
+    connection = sqlite3.connect(database)
+    cursor = connection.cursor()
 
+    def __init__(self):
         self.cursor.execute('''
             CREATE TABLE IF NOT EXISTS songs (
 	            song_name TEXT PRIMARY KEY,
