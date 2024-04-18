@@ -1,4 +1,4 @@
-from src.DataUser import DataUser
+from src.DataUsers.DataUser import DataUser
 
 class ListAdder(DataUser):
     def add_player(self, player: str, songs: list[str]):

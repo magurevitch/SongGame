@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.Scorer import Scorer
+from src.DataUsers.Scorer import Scorer
 
 scorer = Scorer()
 router = APIRouter(prefix="/score")

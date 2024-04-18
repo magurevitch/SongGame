@@ -1,4 +1,4 @@
-from src.DataUser import DataUser
+from src.DataUsers.DataUser import DataUser
 
 class DataViewer(DataUser):
     def get_songs(self):

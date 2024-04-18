@@ -1,4 +1,4 @@
-from src.DataUser import DataUser
+from src.DataUsers.DataUser import DataUser
 
 class Voter(DataUser):
     def add_votes(self, songs: list[str]):

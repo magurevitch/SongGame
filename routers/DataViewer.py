@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.DataViewer import DataViewer
+from src.DataUsers.DataViewer import DataViewer
 
 data_viewer = DataViewer()
 router = APIRouter(prefix="/viewer")

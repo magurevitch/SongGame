@@ -1,8 +1,8 @@
 from src.DataStore import DataStore
-from src.DataViewer import DataViewer
-from src.ListAdder import ListAdder
-from src.Voter import Voter
-from src.Scorer import Scorer
+from src.DataUsers.DataViewer import DataViewer
+from src.DataUsers.ListAdder import ListAdder
+from src.DataUsers.Voter import Voter
+from src.DataUsers.Scorer import Scorer
 import pytest
 
 def reset():

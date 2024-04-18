@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.Voter import Voter
+from src.DataUsers.Voter import Voter
 
 voter = Voter()
 router = APIRouter(prefix="/vote")
