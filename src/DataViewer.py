@@ -1,9 +1,6 @@
-from src.DataStore import DataStore
+from src.DataUser import DataUser
 
-class DataViewer():
-    def __init__(self, is_test=False):
-        self.data_store = DataStore(is_test)
-
+class DataViewer(DataUser):
     def get_songs(self):
         return self.data_store.get_songs()
     

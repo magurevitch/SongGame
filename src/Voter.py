@@ -1,9 +1,6 @@
-from src.DataStore import DataStore
+from src.DataUser import DataUser
 
-class Voter():
-    def __init__(self, is_test=False):
-        self.data_store = DataStore(is_test)
-
+class Voter(DataUser):
     def add_votes(self, songs: list[str]):
         self.data_store.add_votes_from_list(songs)
 

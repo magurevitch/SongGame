@@ -1,9 +1,6 @@
-from src.DataStore import DataStore
+from src.DataUser import DataUser
 
-class ListAdder():
-    def __init__(self, is_test=False):
-        self.data_store = DataStore(is_test)
-
+class ListAdder(DataUser):
     def add_player(self, player: str, songs: list[str]):
         self.data_store.add_player_list(player, songs)
 
