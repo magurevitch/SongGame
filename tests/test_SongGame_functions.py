@@ -6,15 +6,15 @@ from src.Scorer import Scorer
 import pytest
 
 def reset():
-    data_store = DataStore(True)
+    data_store = DataStore()
     data_store.reset_tables()
     assert set(data_store.get_songs()) == set()
     assert set(data_store.get_all_players()) == set()
     assert set(data_store.get_player_lists()) == set()
 
 def adding_lists():
-    list_adder = ListAdder(True)
-    data_viewer = DataViewer(True)
+    list_adder = ListAdder()
+    data_viewer = DataViewer()
 
     list_adder.add_player("A", ["1", "2", "4"])
     assert set(data_viewer.get_players("1")) == {"A"}
@@ -46,8 +46,8 @@ def adding_lists():
     assert set(data_viewer.get_songs()) == {"1", "2", "3", "4", "5", "6"}
 
 def voting():
-    voter = Voter(True)
-    data_viewer = DataViewer(True)
+    voter = Voter()
+    data_viewer = DataViewer()
 
     voter.add_votes(["1", "2", "4"])
     assert data_viewer.get_votes("1") == 1
@@ -72,7 +72,7 @@ def voting():
     assert data_viewer.get_votes("6") == 1
 
 def scoring():
-    scorer = Scorer(True)
+    scorer = Scorer()
 
     assert scorer.song_scores["1"] == 2/3
     assert scorer.song_scores["2"] == 1

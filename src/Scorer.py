@@ -9,11 +9,11 @@ class Result:
         return "total: {}, songs: {}".format(self.total, self.songs)
 
 class Scorer:
-    def __init__(self, is_test=False):
-        self.make_scores(is_test)
+    def __init__(self):
+        self.make_scores()
     
-    def make_scores(self, is_test) -> dict[str, dict]:
-        data_store = DataStore(is_test)
+    def make_scores(self) -> dict[str, dict]:
+        data_store = DataStore()
         def make_song_score(song):
             votes = data_store.get_votes(song)
             players = list(data_store.get_players(song))

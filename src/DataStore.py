@@ -1,8 +1,11 @@
 import sqlite3
+import sys
 
 class DataStore:
-    def __init__(self, is_test=False):
-        self.connection = sqlite3.connect("test_song_game.db" if is_test else "song_game.db")
+    #assuming pytest is only in modules if one is running tests
+    database = "test_song_game.db" if "pytest" in sys.modules else "song_game.db"
+    def __init__(self):
+        self.connection = sqlite3.connect(self.database)
         self.cursor = self.connection.cursor()
 
         self.cursor.execute('''

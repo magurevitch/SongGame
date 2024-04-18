@@ -36,9 +36,8 @@ def get_song_youtube_link(song_title: str) -> str:
     return youtube_format + cleaned_song_title
 
 class CLI:
-    def __init__(self, is_test=False):
-        self.is_test = is_test
-        self.data_viewer = DataViewer(is_test)
+    def __init__(self):
+        self.data_viewer = DataViewer()
         self.phase = None
         self.check_phase(Phase.ADD_LIST)
 
@@ -49,17 +48,17 @@ class CLI:
             self.phase = phase
             match phase:
                 case Phase.ADD_LIST:
-                    self.list_adder = ListAdder(self.is_test)
+                    self.list_adder = ListAdder()
                     self.voter = None
                     self.scorer = None
                 case Phase.VOTE:
                     self.list_adder = None
-                    self.voter = Voter(self.is_test)
+                    self.voter = Voter()
                     self.scorer = None
                 case Phase.SCORE:
                     self.list_adder = None
                     self.voter = None
-                    self.scorer = Scorer(self.is_test)
+                    self.scorer = Scorer()
 
     def run_command(self, command: str, arguments: str | None) -> str:
         if command in commands and commands[command]["phase"]:
@@ -73,7 +72,7 @@ class CLI:
                 arguments = command_help["arguments"] if command_help["arguments"] else ""
                 return "Phase: {}\nArguments: {}\nDescription: {}".format(phase, arguments, command_help["description"])
             case "reset":
-                DataStore(self.is_test).reset_tables()
+                DataStore().reset_tables()
                 return "all data wiped"
             case "songs":
                 songs = list(self.data_viewer.get_songs())

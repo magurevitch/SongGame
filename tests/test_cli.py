@@ -16,7 +16,7 @@ def test_youtube():
     assert get_song_youtube_link(song_title) == "https://www.youtube.com/results?search_query=Barrett%27s+Privateers+-+Stan+Rogers"
 
 def test_run_command():
-    cli = CLI(True)
+    cli = CLI()
     cli.run_command("reset", None)
 
     assert cli.run_command("songs", None) == ""
