@@ -4,7 +4,7 @@ import sys
 class DataStore:
     #assuming pytest is only in modules if one is running tests
     database = "test_song_game.db" if "pytest" in sys.modules else "song_game.db"
-    connection = sqlite3.connect(database)
+    connection = sqlite3.connect(database, check_same_thread=False)
     cursor = connection.cursor()
 
     def __init__(self):
@@ -36,7 +36,7 @@ class DataStore:
         res = self.cursor.execute("SELECT DISTINCT player FROM player_lists;")
         return map(lambda x: x[0], res.fetchall())
 
-    def get_players(self, song: str) -> str:
+    def get_players(self, song: str) -> list[str]:
         res = self.cursor.execute("SELECT player FROM player_lists WHERE song_name='{}';".format(song.replace("'", "''")))
         return map(lambda x: x[0], res.fetchall())
     

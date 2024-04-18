@@ -26,8 +26,8 @@ class Scorer:
             self.player_score[player].total += self.song_scores[song]
             self.player_score[player].songs[song] = self.song_scores[song]
     
-    def make_tally_board(self) -> list[tuple[str, float]]:
+    def get_tally_board(self) -> list[tuple[str, float]]:
         return sorted([(player, result.total) for player, result in self.player_score.items()], key=lambda x: -x[1])
     
-    def get_detailed_breakdown(self, player):
+    def get_detailed_breakdown(self, player: str) -> Result:
         return self.player_score[player]

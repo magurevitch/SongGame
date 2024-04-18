@@ -103,7 +103,7 @@ def scoring():
     assert scorer.player_score["C"].songs["6"] == 0
     assert scorer.player_score["C"].total == pytest.approx(7/6)
     
-    assert scorer.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
+    assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
 def test_song_game_functions():
     '''

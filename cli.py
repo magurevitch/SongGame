@@ -110,7 +110,7 @@ class CLI:
                 self.voter.add_votes_to_song(song, int(votes))
                 return "song {} now has {} votes".format(song, self.data_viewer.get_votes(song))
             case "tally":
-                return "\n".join(player + " - " + str(score) for player, score in self.scorer.make_tally_board())
+                return "\n".join(player + " - " + str(score) for player, score in self.scorer.get_tally_board())
             case "detail":
                 return str(self.scorer.get_detailed_breakdown(arguments))
             case _:
