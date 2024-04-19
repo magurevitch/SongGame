@@ -1,4 +1,5 @@
 import axios from 'axios';
+import Phase from '../Phase';
 
 class API {
     static endpoint = "http://127.0.0.1:8000";
@@ -12,8 +13,16 @@ class API {
         return await axios.post(`${this.endpoint}/${module}/${method}`, data);
     }
 
-    static async getAllPlayers() {
+    static async getPhase(): Promise<{phase: Phase}> {
+        return await this.get('viewer', 'phase/1');
+    }
+
+    static async getAllPlayers(): Promise<{players: string[]}> {
         return await this.get('viewer', 'players');
+    }
+
+    static async getAllSongs(): Promise<{songs: string[]}> {
+        return await this.get('viewer', 'songs');
     }
 }
 

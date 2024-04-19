@@ -14,7 +14,7 @@ def get_current_game(index: int):
 
 @router.get("/phase/{index}")
 def get_game_phase(index: int):
-    return {"phase": data_viewer.get_game_phase(index)}
+    return {"phase": data_viewer.get_game_phase(index).name }
 
 @router.get("/players")
 def get_all_players():

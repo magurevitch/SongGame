@@ -11,6 +11,7 @@ commands = {
     "reset": {"phase": None, "arguments": None, "description": "resets the databases to be null"},
     "new": {"phase": None, "arguments": "prompt", "description": "starts a new game with the given prompt"},
     "prompt": {"phase": None, "arguments": None, "description": "gets prompt for current game"},
+    "phase": {"phase": None, "arguments": None, "description": "gets phase for current game"},
     "songs": {"phase": None, "arguments": None, "description": "lists all songs with index and youtube link"},
     "players": {"phase": None, "arguments": None, "description": "lists all players"},
     "votes": {"phase": None, "arguments": None, "description": "lists all songs with votes"},
@@ -77,6 +78,9 @@ class CLI:
             case "prompt":
                 game_index = self.data_viewer.get_current_game()
                 return self.data_viewer.get_game_prompt(game_index)
+            case "phase":
+                game_index = self.data_viewer.get_current_game()
+                return self.data_viewer.get_game_phase(game_index).name
             case "songs":
                 songs = list(self.data_viewer.get_songs())
                 return "\n".join(str(i) + " - " + songs[i] + " (" + get_song_youtube_link(songs[i]) + ")" for i in range(len(songs)))

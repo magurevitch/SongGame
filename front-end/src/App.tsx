@@ -1,13 +1,17 @@
-import { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Phase from './Phase';
 import ListAdder from './components/ListAdder';
-import React from 'react';
 import Voter from './components/Voter';
 import Scorer from './components/Scorer';
+import API from './components/API';
 
 function App() {
   const [phase, setPhase] = useState<Phase>(Phase.ADD_LIST);
+
+  useEffect(() => {
+    API.getPhase().then(response => setPhase(response.phase))
+  }, [])
 
   const choosePhase = (phase: Phase) => {
     switch(phase) {
@@ -23,6 +27,9 @@ function App() {
   return (
     <div className="App">
       Song Game
+      Phase: 
+      {phase}
+      Content: 
       {choosePhase(phase)}
     </div>
   );
