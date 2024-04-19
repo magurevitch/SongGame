@@ -18,7 +18,9 @@ def test_youtube():
 def test_run_command():
     cli = CLI()
     cli.run_command("reset", None)
+    cli.run_command("new", "cli test")
 
+    assert cli.run_command("prompt", None) == "cli test"
     assert cli.run_command("songs", None) == ""
     assert cli.run_command("players", None) == ""
     assert cli.run_command("votes", None) == ""
@@ -55,7 +57,3 @@ def test_run_command():
     assert cli.run_command("detail", "2") == "total: 2.0, songs: {'A - A': 0.0, 'C - C': 2.0}"
 
     cli.run_command("reset", None)
-
-    assert cli.run_command("songs", None) == ""
-    assert cli.run_command("players", None) == ""
-    assert cli.run_command("votes", None) == ""

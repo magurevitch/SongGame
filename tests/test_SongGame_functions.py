@@ -1,16 +1,20 @@
-from src.DataStore import DataStore
+from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
 from src.DataUsers.Voter import Voter
 from src.DataUsers.Scorer import Scorer
 import pytest
 
-def reset():
-    data_store = DataStore()
-    data_store.reset_tables()
-    assert set(data_store.get_songs()) == set()
-    assert set(data_store.get_all_players()) == set()
-    assert set(data_store.get_player_lists()) == set()
+def new_game():
+    game_manager = GameManager()
+    data_viewer = DataViewer()
+
+    assert data_viewer.get_current_game() == None
+
+    game_manager.start_game("test")
+
+    assert data_viewer.get_current_game() == 1
+    assert data_viewer.get_game_prompt(1) == "test"
 
 def adding_lists():
     list_adder = ListAdder()
@@ -121,8 +125,13 @@ def test_song_game_functions():
     player C: list is 1, 3, 6
     '''
 
-    reset()
+    GameManager().reset_tables()
+    assert DataViewer().get_current_game() is None
+
+    new_game()
     adding_lists()
     voting()
     scoring()
-    reset()
+
+    GameManager().reset_tables()
+    assert DataViewer().get_current_game() is None

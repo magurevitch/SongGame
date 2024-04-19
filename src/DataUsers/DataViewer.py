@@ -1,6 +1,12 @@
 from src.DataUsers.DataUser import DataUser
 
 class DataViewer(DataUser):
+    def get_current_game(self):
+        return self.data_store.get_current_game()
+    
+    def get_game_prompt(self, game_index: int):
+        return self.data_store.get_game_prompt(game_index)
+
     def get_songs(self):
         return self.data_store.get_songs()
     

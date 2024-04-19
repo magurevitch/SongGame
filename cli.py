@@ -1,4 +1,4 @@
-from src.DataStore import DataStore
+from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
 from src.DataUsers.Voter import Voter
@@ -10,6 +10,8 @@ commands = {
     "stop": {"phase": None, "arguments": None, "description": "closes the cli"},
     "help": {"phase": None, "arguments": "command_name", "description": "gives the description of given command"}, 
     "reset": {"phase": None, "arguments": None, "description": "resets the databases to be null"},
+    "new": {"phase": None, "arguments": "prompt", "description": "starts a new game with the given prompt"},
+    "prompt": {"phase": None, "arguments": None, "description": "gets prompt for current game"},
     "songs": {"phase": None, "arguments": None, "description": "lists all songs with index and youtube link"},
     "players": {"phase": None, "arguments": None, "description": "lists all players"},
     "votes": {"phase": None, "arguments": None, "description": "lists all songs with votes"},
@@ -72,8 +74,14 @@ class CLI:
                 arguments = command_help["arguments"] if command_help["arguments"] else ""
                 return "Phase: {}\nArguments: {}\nDescription: {}".format(phase, arguments, command_help["description"])
             case "reset":
-                DataStore().reset_tables()
+                GameManager().reset_tables()
                 return "all data wiped"
+            case "new":
+                GameManager().start_game(arguments)
+                return "started a new game"
+            case "prompt":
+                game_index = self.data_viewer.get_current_game()
+                return self.data_viewer.get_game_prompt(game_index)
             case "songs":
                 songs = list(self.data_viewer.get_songs())
                 return "\n".join(str(i) + " - " + songs[i] + " (" + get_song_youtube_link(songs[i]) + ")" for i in range(len(songs)))
@@ -117,6 +125,11 @@ class CLI:
                 return "valid commands are " + ", ".join(commands.keys())
 
     def run_cli(self):
+        current_game = self.data_viewer.get_current_game()
+        if current_game is None:
+            print(self.run_command("new", "") + " with no prompt")
+        else:
+            print("current prompt is: " + self.run_command("prompt", current_game))
         print("players: " + self.run_command("players", None))
         print("songs and votes:")
         print(self.run_command("votes", None))
