@@ -1,24 +1,29 @@
-import React from 'react';
-import logo from './logo.svg';
+import { useState } from 'react';
 import './App.css';
+import Phase from './Phase';
+import ListAdder from './components/ListAdder';
+import React from 'react';
+import Voter from './components/Voter';
+import Scorer from './components/Scorer';
 
 function App() {
+  const [phase, setPhase] = useState<Phase>(Phase.ADD_LIST);
+
+  const choosePhase = (phase: Phase) => {
+    switch(phase) {
+      case Phase.ADD_LIST:
+        return <ListAdder />
+      case Phase.VOTE:
+        return <Voter />
+      case Phase.SCORE:
+        return <Scorer />
+    }
+  };
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      Song Game
+      {choosePhase(phase)}
     </div>
   );
 }
