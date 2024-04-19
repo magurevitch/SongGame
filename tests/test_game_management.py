@@ -3,6 +3,7 @@ from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
 from src.DataUsers.Voter import Voter
+from src.DataUsers.Scorer import Scorer
 
 def test_new_game():
     game_manager = GameManager()
@@ -49,6 +50,9 @@ def test_new_game():
 def test_phase_manager():
     game_manager = GameManager()
     data_viewer = DataViewer()
+    list_adder = ListAdder()
+    voter = Voter()
+    scorer = Scorer()
 
     game_manager.reset_tables()
 
@@ -59,10 +63,18 @@ def test_phase_manager():
     assert data_viewer.get_current_game() == 1
     assert data_viewer.get_game_phase(1) == Phase.ADD_LIST
 
+    assert list_adder.is_allowed(1)
+    assert not voter.is_allowed(1)
+    assert not scorer.is_allowed(1)
+
     game_manager.advance_current_phase()
 
     assert data_viewer.get_current_game() == 1
     assert data_viewer.get_game_phase(1) == Phase.VOTE
+
+    assert not list_adder.is_allowed(1)
+    assert voter.is_allowed(1)
+    assert not scorer.is_allowed(1)
 
     game_manager.start_game("second")
     
@@ -70,23 +82,43 @@ def test_phase_manager():
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.ADD_LIST
 
+    assert not list_adder.is_allowed(1)
+    assert voter.is_allowed(1)
+    assert not scorer.is_allowed(1)
+
+    assert list_adder.is_allowed(2)
+    assert not voter.is_allowed(2)
+    assert not scorer.is_allowed(2)
+
     game_manager.advance_current_phase()
 
     assert data_viewer.get_current_game() == 2
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.VOTE
 
-    game_manager.advance_current_phase()
-
-    assert data_viewer.get_current_game() == 2
-    assert data_viewer.get_game_phase(1) == Phase.VOTE
-    assert data_viewer.get_game_phase(2) == Phase.SCORE
+    assert not list_adder.is_allowed(2)
+    assert voter.is_allowed(2)
+    assert not scorer.is_allowed(2)
 
     game_manager.advance_current_phase()
 
     assert data_viewer.get_current_game() == 2
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.SCORE
+
+    assert not list_adder.is_allowed(2)
+    assert not voter.is_allowed(2)
+    assert scorer.is_allowed(2)
+
+    game_manager.advance_current_phase()
+
+    assert data_viewer.get_current_game() == 2
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+    assert data_viewer.get_game_phase(2) == Phase.SCORE
+
+    assert not list_adder.is_allowed(2)
+    assert not voter.is_allowed(2)
+    assert scorer.is_allowed(2)
 
     game_manager.reset_tables()
 

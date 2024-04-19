@@ -77,6 +77,7 @@ def voting():
 
 def scoring():
     scorer = Scorer()
+    scorer.make_scores()
 
     assert scorer.song_scores["1"] == 2/3
     assert scorer.song_scores["2"] == 1

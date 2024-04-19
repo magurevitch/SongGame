@@ -1,4 +1,4 @@
-from Phases import Phase
+from src.Phases import Phase
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
@@ -38,31 +38,31 @@ def get_song_youtube_link(song_title: str) -> str:
 
 class CLI:
     def __init__(self):
+        self.game_manager = GameManager()
         self.data_viewer = DataViewer()
-        self.phase = None
-        self.check_phase(Phase.ADD_LIST)
+        self.list_adder = ListAdder()
+        self.voter = Voter()
+        self.scorer = Scorer()
 
-    def check_phase(self, phase: Phase):
-        if self.phase != phase:
-            if self.phase:
-                print("changing phases from {} to {}".format(self.phase.name, phase.name))
-            self.phase = phase
-            match phase:
-                case Phase.ADD_LIST:
-                    self.list_adder = ListAdder()
-                    self.voter = None
-                    self.scorer = None
-                case Phase.VOTE:
-                    self.list_adder = None
-                    self.voter = Voter()
-                    self.scorer = None
-                case Phase.SCORE:
-                    self.list_adder = None
-                    self.voter = None
-                    self.scorer = Scorer()
+    def check_phase(self, phase: Phase | None):
+        match phase:
+            case None:
+                return
+            case Phase.ADD_LIST:
+                relevant_data_user = self.list_adder
+            case Phase.VOTE:
+                relevant_data_user = self.voter
+            case Phase.SCORE:
+                relevant_data_user = self.scorer
+        index = self.data_viewer.get_current_game()
+        if not relevant_data_user.is_allowed(index):
+            print("changing phase to {}".format(phase.name))
+            self.game_manager.change_phase(index, phase)
+            if phase == Phase.SCORE:
+                relevant_data_user.make_scores()
 
     def run_command(self, command: str, arguments: str | None) -> str:
-        if command in commands and commands[command]["phase"]:
+        if command in commands:
             self.check_phase(commands[command]["phase"])
         match command:
             case "help":
@@ -73,10 +73,10 @@ class CLI:
                 arguments = command_help["arguments"] if command_help["arguments"] else ""
                 return "Phase: {}\nArguments: {}\nDescription: {}".format(phase, arguments, command_help["description"])
             case "reset":
-                GameManager().reset_tables()
+                self.game_manager.reset_tables()
                 return "all data wiped"
             case "new":
-                GameManager().start_game(arguments)
+                self.game_manager.start_game(arguments)
                 return "started a new game"
             case "prompt":
                 game_index = self.data_viewer.get_current_game()
