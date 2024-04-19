@@ -45,15 +45,11 @@ class CLI:
         self.scorer = Scorer()
 
     def check_phase(self, phase: Phase | None):
-        match phase:
-            case None:
-                return
-            case Phase.ADD_LIST:
-                relevant_data_user = self.list_adder
-            case Phase.VOTE:
-                relevant_data_user = self.voter
-            case Phase.SCORE:
-                relevant_data_user = self.scorer
+        relevant_data_user = {
+            Phase.ADD_LIST: self.list_adder,
+            Phase.VOTE: self.voter,
+            Phase.SCORE: self.scorer,
+        }[phase]
         index = self.data_viewer.get_current_game()
         if not relevant_data_user.is_allowed(index):
             print("changing phase to {}".format(phase.name))
@@ -62,7 +58,7 @@ class CLI:
                 relevant_data_user.make_scores()
 
     def run_command(self, command: str, arguments: str | None) -> str:
-        if command in commands:
+        if command in commands and commands[command]["phase"]:
             self.check_phase(commands[command]["phase"])
         match command:
             case "help":
