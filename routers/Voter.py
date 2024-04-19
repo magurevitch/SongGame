@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from ApiModels import AddVotes, MassVote
+from src.ApiModels import AddVotes, MassVote
 from src.DataUsers.Voter import Voter
 
 voter = Voter()
