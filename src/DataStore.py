@@ -1,6 +1,8 @@
 import sqlite3
 import sys
 
+from src.Phases import Phase
+
 class DataStore:
     #assuming pytest is only in modules if one is running tests
     database = "test_song_game.db" if "pytest" in sys.modules else "song_game.db"
@@ -46,6 +48,10 @@ class DataStore:
         res = self.cursor.execute("SELECT MAX(game_index) FROM games;")
         return res.fetchone()[0]
     
+    def get_game_phase(self, game_index: int):
+        res = self.cursor.execute("SELECT phase FROM games WHERE game_index='{}';".format(game_index))
+        return Phase[res.fetchone()[0]]
+    
     def get_game_prompt(self, game_index: int):
         res = self.cursor.execute("SELECT prompt FROM games WHERE game_index='{}';".format(game_index))
         return res.fetchone()[0]
@@ -79,6 +85,10 @@ class DataStore:
         self.cursor.execute("INSERT INTO games (phase, prompt) SELECT 'ADD_LIST', '{}'".format(prompt))
         self.connection.commit()
         return self.get_current_game()
+        
+    def change_phase(self, game_index: int, phase: Phase):
+        self.cursor.execute("UPDATE games SET phase = '{}' WHERE game_index = {}".format(phase.name, game_index))
+        self.connection.commit()
     
     def add_player_list(self, player: str, songs: list[str]):
         game_index = self.get_current_game()

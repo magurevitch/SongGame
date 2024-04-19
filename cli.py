@@ -1,11 +1,10 @@
+from Phases import Phase
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
 from src.DataUsers.Voter import Voter
 from src.DataUsers.Scorer import Scorer
-from enum import Enum
 
-Phase = Enum('Phase', ['ADD_LIST', 'VOTE', 'SCORE'])
 commands = {
     "stop": {"phase": None, "arguments": None, "description": "closes the cli"},
     "help": {"phase": None, "arguments": "command_name", "description": "gives the description of given command"}, 

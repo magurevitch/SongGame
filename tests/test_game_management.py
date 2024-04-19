@@ -1,9 +1,10 @@
+from src.Phases import Phase
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
+from src.DataUsers.Voter import Voter
 
-
-def test_game_management():
+def test_new_game():
     game_manager = GameManager()
     data_viewer = DataViewer()
     list_adder = ListAdder()
@@ -45,3 +46,48 @@ def test_game_management():
 
     assert data_viewer.get_current_game() is None
 
+def test_phase_manager():
+    game_manager = GameManager()
+    data_viewer = DataViewer()
+
+    game_manager.reset_tables()
+
+    assert data_viewer.get_current_game() is None
+
+    game_manager.start_game("first")
+
+    assert data_viewer.get_current_game() == 1
+    assert data_viewer.get_game_phase(1) == Phase.ADD_LIST
+
+    game_manager.advance_current_phase()
+
+    assert data_viewer.get_current_game() == 1
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+
+    game_manager.start_game("second")
+    
+    assert data_viewer.get_current_game() == 2
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+    assert data_viewer.get_game_phase(2) == Phase.ADD_LIST
+
+    game_manager.advance_current_phase()
+
+    assert data_viewer.get_current_game() == 2
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+    assert data_viewer.get_game_phase(2) == Phase.VOTE
+
+    game_manager.advance_current_phase()
+
+    assert data_viewer.get_current_game() == 2
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+    assert data_viewer.get_game_phase(2) == Phase.SCORE
+
+    game_manager.advance_current_phase()
+
+    assert data_viewer.get_current_game() == 2
+    assert data_viewer.get_game_phase(1) == Phase.VOTE
+    assert data_viewer.get_game_phase(2) == Phase.SCORE
+
+    game_manager.reset_tables()
+
+    assert data_viewer.get_current_game() is None
