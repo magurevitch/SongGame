@@ -46,44 +46,41 @@ class DataStore:
         cursor.execute("DELETE FROM player_lists;")
         self.connection.commit()
 
-    def get_current_game(self):
+    def fetch_single_value(self, query: str):
         cursor = self.connection.cursor()
-        res = cursor.execute("SELECT MAX(game_index) FROM games;")
+        res = cursor.execute(query)
         return res.fetchone()[0]
     
-    def get_game_phase(self, game_index: int):
+    def fetch_many_values(self, query: str):
         cursor = self.connection.cursor()
-        res = cursor.execute("SELECT phase FROM games WHERE game_index='{}';".format(game_index))
-        return Phase[res.fetchone()[0]]
+        res = cursor.execute(query)
+        return map(lambda x: x[0], res.fetchall())
+
+    def get_current_game(self) -> int:
+        return self.fetch_single_value("SELECT MAX(game_index) FROM games;")
     
-    def get_game_prompt(self, game_index: int):
-        cursor = self.connection.cursor()
-        res = cursor.execute("SELECT prompt FROM games WHERE game_index='{}';".format(game_index))
-        return res.fetchone()[0]
+    def get_game_phase(self, game_index: int) -> Phase:
+        phase = self.fetch_single_value("SELECT phase FROM games WHERE game_index='{}';".format(game_index))
+        return Phase[phase]
+    
+    def get_game_prompt(self, game_index: int) -> str:
+        return self.fetch_single_value("SELECT prompt FROM games WHERE game_index='{}';".format(game_index))
     
     def get_songs(self) -> list[str]:
         game_index = self.get_current_game()
-        cursor = self.connection.cursor()
-        res = cursor.execute("SELECT song_name FROM songs WHERE game_index = {};".format(game_index))
-        return map(lambda x: x[0], res.fetchall())
+        return self.fetch_many_values("SELECT song_name FROM songs WHERE game_index = {};".format(game_index))
     
     def get_all_players(self) -> list[str]:
         game_index = self.get_current_game()
-        cursor = self.connection.cursor()
-        res = cursor.execute("SELECT DISTINCT player FROM player_lists WHERE game_index = {};".format(game_index))
-        return map(lambda x: x[0], res.fetchall())
+        return self.fetch_many_values("SELECT DISTINCT player FROM player_lists WHERE game_index = {};".format(game_index))
 
     def get_players(self, song: str) -> list[str]:
         game_index = self.get_current_game()
-        cursor = self.connection.cursor()
-        res = cursor.execute("SELECT player FROM player_lists WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
-        return map(lambda x: x[0], res.fetchall())
+        return self.fetch_many_values("SELECT player FROM player_lists WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
     
     def get_votes(self, song: str) -> int:
         game_index = self.get_current_game()
-        cursor = self.connection.cursor()
-        res = cursor.execute("SELECT votes FROM songs WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
-        return res.fetchone()[0]
+        return self.fetch_single_value("SELECT votes FROM songs WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
     
     def get_player_lists(self) -> tuple[str, str]:
         game_index = self.get_current_game()
