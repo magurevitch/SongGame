@@ -3,6 +3,9 @@ import sys
 
 from src.Phases import Phase
 
+def for_db(text: str) -> str:
+    return text.replace("'", "''")
+
 class DataStore:
     #assuming pytest is only in modules if one is running tests
     database = "test_song_game.db" if "pytest" in sys.modules else "song_game.db"
@@ -76,13 +79,13 @@ class DataStore:
 
     def get_players(self, song: str) -> list[str]:
         game_index = self.get_current_game()
-        return self.fetch_many_values("SELECT player FROM player_lists WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
+        return self.fetch_many_values("SELECT player FROM player_lists WHERE song_name='{}' AND game_index = {};".format(for_db(song), game_index))
     
     def get_votes(self, song: str) -> int:
         game_index = self.get_current_game()
-        return self.fetch_single_value("SELECT votes FROM songs WHERE song_name='{}' AND game_index = {};".format(song.replace("'", "''"), game_index))
+        return self.fetch_single_value("SELECT votes FROM songs WHERE song_name='{}' AND game_index = {};".format(for_db(song), game_index))
     
-    def get_player_lists(self) -> tuple[str, str]:
+    def get_player_lists(self) -> list[tuple[str, str]]:
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
         res = cursor.execute("SELECT song_name, player from player_lists WHERE game_index = {};".format(game_index))
@@ -103,8 +106,8 @@ class DataStore:
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
         for song in songs:
-            cursor.execute("INSERT INTO songs (game_index, song_name) SELECT {0}, '{1}' WHERE NOT EXISTS (SELECT 1 FROM songs WHERE game_index = {0} AND song_name = '{1}');".format(game_index, song.replace("'", "''")))
-            cursor.execute("INSERT INTO player_lists (game_index, song_name, player) SELECT {}, '{}', '{}';".format(game_index, song.replace("'", "''"), player))
+            cursor.execute("INSERT INTO songs (game_index, song_name) SELECT {0}, '{1}' WHERE NOT EXISTS (SELECT 1 FROM songs WHERE game_index = {0} AND song_name = '{1}');".format(game_index, for_db(song)))
+            cursor.execute("INSERT INTO player_lists (game_index, song_name, player) SELECT {}, '{}', '{}';".format(game_index, for_db(song), player))
         self.connection.commit()
 
     def add_votes_from_list(self, song_list: list[str]):
@@ -117,12 +120,12 @@ class DataStore:
     def add_votes_to_song(self, song: str, votes: int):
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
-        cursor.execute("UPDATE songs SET votes = votes + {} WHERE song_name = '{}' AND game_index = {};".format(votes, song.replace("'", "''"), game_index))
+        cursor.execute("UPDATE songs SET votes = votes + {} WHERE song_name = '{}' AND game_index = {};".format(votes, for_db(song)), game_index)
         self.connection.commit()
 
     def merge_songs(self, song1:str, song2: str):
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
-        cursor.execute("UPDATE player_lists SET song_name = '{}' WHERE song_name = '{}' AND game_index = {};".format(song1.replace("'", "''"), song2.replace("'", "''"), game_index))
-        cursor.execute("DELETE FROM songs WHERE song_name = '{}' AND game_index = {};".format(song2.replace("'", "''"), game_index))
+        cursor.execute("UPDATE player_lists SET song_name = '{}' WHERE song_name = '{}' AND game_index = {};".format(for_db(song1), for_db(song2), game_index))
+        cursor.execute("DELETE FROM songs WHERE song_name = '{}' AND game_index = {};".format(for_db(song2), game_index))
         self.connection.commit()
