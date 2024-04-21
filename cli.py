@@ -34,7 +34,7 @@ def find_arguments(raw_input:str) -> list[str, None]:
 
 def get_song_youtube_link(song_title: str) -> str:
     youtube_format = "https://www.youtube.com/results?search_query="
-    cleaned_song_title = song_title #.replace(" ", "+").replace("'", "%27")
+    cleaned_song_title = song_title.replace(" ", "+").replace("'", "%27")
     return youtube_format + cleaned_song_title
 
 class CLI:

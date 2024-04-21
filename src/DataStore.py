@@ -120,7 +120,7 @@ class DataStore:
     def add_votes_to_song(self, song: str, votes: int):
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
-        cursor.execute("UPDATE songs SET votes = votes + {} WHERE song_name = '{}' AND game_index = {};".format(votes, for_db(song)), game_index)
+        cursor.execute("UPDATE songs SET votes = votes + {} WHERE song_name = '{}' AND game_index = {};".format(votes, for_db(song), game_index))
         self.connection.commit()
 
     def merge_songs(self, song1:str, song2: str):

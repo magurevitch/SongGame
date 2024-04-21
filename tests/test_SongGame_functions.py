@@ -60,20 +60,28 @@ def voting():
     assert data_viewer.get_votes("4") == 1
     assert data_viewer.get_votes("5") == 0
     assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4", "5"])
+    voter.add_votes(["1", "2", "3", "4"])
     assert data_viewer.get_votes("1") == 2
     assert data_viewer.get_votes("2") == 2
     assert data_viewer.get_votes("3") == 1
     assert data_viewer.get_votes("4") == 2
-    assert data_viewer.get_votes("5") == 1
+    assert data_viewer.get_votes("5") == 0
     assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4", "5", "6"])
+    voter.add_votes(["1", "2", "3", "4", "6"])
+    assert data_viewer.get_votes("1") == 3
+    assert data_viewer.get_votes("2") == 3
+    assert data_viewer.get_votes("3") == 2
+    assert data_viewer.get_votes("4") == 3
+    assert data_viewer.get_votes("5") == 0
+    assert data_viewer.get_votes("6") == 1
+    voter.add_votes_to_song("5", 2)
     assert data_viewer.get_votes("1") == 3
     assert data_viewer.get_votes("2") == 3
     assert data_viewer.get_votes("3") == 2
     assert data_viewer.get_votes("4") == 3
     assert data_viewer.get_votes("5") == 2
     assert data_viewer.get_votes("6") == 1
+
 
 def scoring():
     scorer = Scorer()
