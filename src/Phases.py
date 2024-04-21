@@ -1,9 +1,10 @@
 from enum import Enum
 
 class Phase(Enum):
-    ADD_LIST = 0
-    VOTE = 1
-    SCORE = 2
+    ADMIN = 0
+    ADD_LIST = 1
+    VOTE = 2
+    SCORE = 3
 
     def next(self):
         value = self.value + 1

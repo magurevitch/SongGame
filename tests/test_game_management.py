@@ -63,6 +63,8 @@ def test_phase_manager():
     assert data_viewer.get_current_game() == 1
     assert data_viewer.get_game_phase(1) == Phase.ADD_LIST
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert list_adder.is_allowed(1)
     assert not voter.is_allowed(1)
     assert not scorer.is_allowed(1)
@@ -72,6 +74,8 @@ def test_phase_manager():
     assert data_viewer.get_current_game() == 1
     assert data_viewer.get_game_phase(1) == Phase.VOTE
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert not list_adder.is_allowed(1)
     assert voter.is_allowed(1)
     assert not scorer.is_allowed(1)
@@ -82,6 +86,8 @@ def test_phase_manager():
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.ADD_LIST
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert not list_adder.is_allowed(1)
     assert voter.is_allowed(1)
     assert not scorer.is_allowed(1)
@@ -96,6 +102,8 @@ def test_phase_manager():
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.VOTE
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert not list_adder.is_allowed(2)
     assert voter.is_allowed(2)
     assert not scorer.is_allowed(2)
@@ -106,6 +114,8 @@ def test_phase_manager():
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.SCORE
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert not list_adder.is_allowed(2)
     assert not voter.is_allowed(2)
     assert scorer.is_allowed(2)
@@ -116,6 +126,8 @@ def test_phase_manager():
     assert data_viewer.get_game_phase(1) == Phase.VOTE
     assert data_viewer.get_game_phase(2) == Phase.SCORE
 
+    assert data_viewer.is_allowed(1)
+    assert not game_manager.is_allowed(1)
     assert not list_adder.is_allowed(2)
     assert not voter.is_allowed(2)
     assert scorer.is_allowed(2)

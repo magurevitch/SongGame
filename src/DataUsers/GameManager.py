@@ -2,6 +2,8 @@ from src.Phases import Phase
 from src.DataUsers.DataUser import DataUser
 
 class GameManager(DataUser):
+    restricted_phase = Phase.ADMIN
+
     def reset_tables(self):
         self.data_store.reset_tables()
 
