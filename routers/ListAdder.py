@@ -6,7 +6,7 @@ list_adder = ListAdder()
 router = APIRouter(prefix="/list")
 
 @router.post("/add")
-def get_all_players(request: PlayerList):
+def add_player_list(request: PlayerList):
     list_adder.add_player(request.player, request.songs)
     return {}
 

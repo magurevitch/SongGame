@@ -8,10 +8,15 @@ import API from './components/API';
 
 function App() {
   const [phase, setPhase] = useState<Phase>(Phase.ADD_LIST);
+  const [currentGame, setCurrentGame] = useState<number>(1);
 
   useEffect(() => {
-    API.getPhase().then(response => setPhase(response.phase))
+    API.getCurrentGame().then(response => setCurrentGame(response.game));
   }, [])
+
+  useEffect(() => {
+    API.getPhase(currentGame).then(response => setPhase(Phase[response.phase as keyof typeof Phase]));
+  }, [currentGame]);
 
   const choosePhase = (phase: Phase) => {
     switch(phase) {
@@ -27,9 +32,10 @@ function App() {
   return (
     <div className="App">
       Song Game
+      Game:
+      {currentGame}
       Phase: 
-      {phase}
-      Content: 
+      {Phase[phase]}
       {choosePhase(phase)}
     </div>
   );
