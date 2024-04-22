@@ -19,6 +19,7 @@ def new_game():
 def adding_lists():
     list_adder = ListAdder()
     data_viewer = DataViewer()
+    game_manager = GameManager()
 
     list_adder.add_player("A", ["1", "2", "4"])
     assert set(data_viewer.get_players("1")) == {"A"}
@@ -38,7 +39,7 @@ def adding_lists():
     list_adder.add_player("C", ["1'", "3", "6"])
     assert set(data_viewer.get_players("1")) == {"A", "B"}
     assert set(data_viewer.get_players("1'")) == {"C"}
-    list_adder.merge_songs("1", "1'")
+    game_manager.merge_songs("1", "1'")
     assert set(data_viewer.get_players("1")) == {"A", "B", "C"}
     assert set(data_viewer.get_players("2")) == {"A", "B"}
     assert set(data_viewer.get_players("3")) == {"B", "C"}

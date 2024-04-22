@@ -101,7 +101,7 @@ class CLI:
             case "merge":
                 index1, index2 = arguments.split()
                 songs = list(self.data_viewer.get_songs())
-                self.list_adder.merge_songs(songs[int(index1)], songs[int(index2)])
+                self.game_manager.merge_songs(songs[int(index1)], songs[int(index2)])
                 return "merged song {} into song {}".format(songs[int(index1)], songs[int(index2)])
             case "vote":
                 votes = set(arguments.split())
