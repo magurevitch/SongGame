@@ -39,12 +39,14 @@ const ListAdder = () => {
     };
 
     return <div>
-        Players who have already submitted: {players}
+        Players who have already submitted: {players.join(", ")}
+        <br/>
         <form onSubmit={handleSubmit}>
             <label>Name: <input type="text" key="name" onChange={handleNameChange} /></label>
+            <br/>
             <label>Songs:</label>
             {
-                formValues.songs.map((value, index) => <input type="text" key={`song${index}`} onChange={handleSongsChange(index)} value={value} />)
+                formValues.songs.map((value, index) => <div><input type="text" key={`song${index}`} onChange={handleSongsChange(index)} value={value} /></div>)
             }
             <button type="submit">Submit</button>
         </form>

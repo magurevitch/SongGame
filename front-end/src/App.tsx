@@ -32,10 +32,12 @@ function App() {
   return (
     <div className="App">
       Song Game
+      <br/>
       Game:
       {currentGame}
       Phase: 
       {Phase[phase]}
+      <br/>
       {choosePhase(phase)}
     </div>
   );

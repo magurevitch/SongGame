@@ -69,7 +69,8 @@ def test_phase_manager():
     assert not voter.is_allowed(1)
     assert not scorer.is_allowed(1)
 
-    game_manager.advance_current_phase()
+    phase = game_manager.advance_current_phase()
+    assert phase == Phase.VOTE
 
     assert data_viewer.get_current_game() == 1
     assert data_viewer.get_game_phase(1) == Phase.VOTE
