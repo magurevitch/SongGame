@@ -44,6 +44,20 @@ class API {
     static async vote(songs: string[]) {
         return await this.post('vote', '', {songs});
     }
+
+    static async score() {
+        return await this.post('score', '');
+    }
+
+    static async getTally(): Promise<{tally_board: {player: string, score: number}[]}> {
+        let tally = await this.get('score', 'tally');
+        console.log(tally)
+        return await this.get('score', 'tally');
+    }
+
+    static async getPlayerDetails(player: string): Promise<{breakdown: {total: number, songs: {[songName: string]: number}}}> {
+        return await this.get('score', `player/${player}`);
+    }
 }
 
 export default API

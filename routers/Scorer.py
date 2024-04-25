@@ -11,7 +11,8 @@ def score():
 
 @router.get("/tally")
 def get_tally_board():
-    return {"tally_board": list(scorer.get_tally_board())}
+    tally_board = [{"player": player, "score": score} for player, score in scorer.get_tally_board()]
+    return {"tally_board": tally_board}
 
 @router.get("/player/{player}")
 def get_detailed_breakdown(player: str):
