@@ -8,7 +8,8 @@ type Song = {
 
 const ListAdder = () => {
     const [players, setPlayers] = useState<string[]>([]);
-    const [formValues, setFormValues] = useState<{name: string, songs: Song[]}>({name: "", songs: [{song: "", artist: ""}]})
+    const [playerName, setPlayerName] = useState<string>("");
+    const [playerSongs, setPlayerSongs] = useState<Song[]>([{song: "", artist: ""}]);
 
     useEffect(() => {
         API.getAllPlayers().then(response => setPlayers(response.players));
@@ -16,23 +17,23 @@ const ListAdder = () => {
 
     const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        if (players.includes(formValues.name)) {
+        if (players.includes(playerName)) {
             console.log("Already submitted");
             return;
         }
-        await API.addPlayerList(formValues.name, formValues.songs.filter(x => x.song).map(x => `${x.song} - ${x.artist || "Unknown"}`));
+        await API.addPlayerList(playerName, playerSongs.filter(x => x.song).map(x => `${x.song} - ${x.artist || "Unknown"}`));
         let newPlayers = await API.getAllPlayers();
         setPlayers(newPlayers.players);
     };
 
     const handleNameChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-        setFormValues({ ...formValues, name: event.target.value });
+        setPlayerName(event.target.value);
     };
 
     const handleSongsChange = (index: number, isArtist: boolean) => (event: React.ChangeEvent<HTMLInputElement>) => {
         event.preventDefault();
-        let songs = formValues.songs;
+        let songs = playerSongs;
         if(isArtist) {
             songs[index].artist = event.target.value;
         } else {
@@ -44,7 +45,7 @@ const ListAdder = () => {
         } else if (index+1 === songs.length) {
             songs.push({song: "", artist: ""});
         }
-        setFormValues({ ...formValues, songs });
+        setPlayerSongs([...songs]);
     };
 
     return <div>
@@ -55,7 +56,7 @@ const ListAdder = () => {
             <br/>
             <label>Songs - Artists:</label>
             {
-                formValues.songs.map((value, index) => <div>
+                playerSongs.map((value, index) => <div>
                     <input type="text" key={`song${index}`} onChange={handleSongsChange(index, false)} value={value.song} />
                     -
                     <input type="text" key={`artist${index}`} onChange={handleSongsChange(index, true)} value={value.artist} />

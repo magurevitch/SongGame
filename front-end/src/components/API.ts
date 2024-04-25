@@ -40,6 +40,10 @@ class API {
     static async addPlayerList(player: string, songs: string[]) {
         return await this.post('list', 'add', {player, songs})
     }
+
+    static async vote(songs: string[]) {
+        return await this.post('vote', '', {songs});
+    }
 }
 
 export default API
