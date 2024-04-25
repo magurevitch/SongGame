@@ -4,7 +4,7 @@ import API from "./API";
 const Scorer = () => {
     const [tallyBoard, setTallyBoard] = useState<{player: string, score: number}[]>();
     const [featuredPlayer, setFeaturedPlayer] = useState<string>("");
-    const [breakdown, setBreakdown] = useState<{total: number, songs: {[songName: string]: number}}>();
+    const [breakdown, setBreakdown] = useState<{total: number, songs: {[songName: string]: {score: number, votes: number, players: number}}}>();
 
     useEffect(() => {
         API.score().then(response => {
@@ -28,7 +28,7 @@ const Scorer = () => {
         <div>
             {featuredPlayer}
             {breakdown?.total}
-            {Object.entries(breakdown?.songs || {})}
+            {Object.entries(breakdown?.songs || {}).map(([song, detail]) => <div>{song}: {detail.score} from {detail.votes} votes and {detail.players} players guessing</div>)}
         </div>
     </div>;
 }

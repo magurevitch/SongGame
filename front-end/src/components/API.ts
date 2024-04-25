@@ -50,12 +50,10 @@ class API {
     }
 
     static async getTally(): Promise<{tally_board: {player: string, score: number}[]}> {
-        let tally = await this.get('score', 'tally');
-        console.log(tally)
         return await this.get('score', 'tally');
     }
 
-    static async getPlayerDetails(player: string): Promise<{breakdown: {total: number, songs: {[songName: string]: number}}}> {
+    static async getPlayerDetails(player: string): Promise<{breakdown: {total: number, songs: {[songName: string]: {score: number, votes: number, players: number}}}}> {
         return await this.get('score', `player/${player}`);
     }
 }
