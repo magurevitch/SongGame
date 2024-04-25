@@ -1,4 +1,6 @@
 .vscode/*
-__pycache__/*
-*/__pycache__/*
+**/__pycache__/**
 *.db
+front-end/node_modules
+front-end/build
+front-end/coverage

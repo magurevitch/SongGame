@@ -1,20 +1,25 @@
-from src.DataStore import DataStore
-from src.DataViewer import DataViewer
-from src.ListAdder import ListAdder
-from src.Voter import Voter
-from src.Scorer import Scorer
+from src.DataUsers.GameManager import GameManager
+from src.DataUsers.DataViewer import DataViewer
+from src.DataUsers.ListAdder import ListAdder
+from src.DataUsers.Voter import Voter
+from src.DataUsers.Scorer import Scorer
 import pytest
 
-def reset():
-    data_store = DataStore(True)
-    data_store.reset_tables()
-    assert set(data_store.get_songs()) == set()
-    assert set(data_store.get_all_players()) == set()
-    assert set(data_store.get_player_lists()) == set()
+def new_game():
+    game_manager = GameManager()
+    data_viewer = DataViewer()
+
+    assert data_viewer.get_current_game() == None
+
+    game_manager.start_game("test")
+
+    assert data_viewer.get_current_game() == 1
+    assert data_viewer.get_game_prompt(1) == "test"
 
 def adding_lists():
-    list_adder = ListAdder(True)
-    data_viewer = DataViewer(True)
+    list_adder = ListAdder()
+    data_viewer = DataViewer()
+    game_manager = GameManager()
 
     list_adder.add_player("A", ["1", "2", "4"])
     assert set(data_viewer.get_players("1")) == {"A"}
@@ -34,7 +39,7 @@ def adding_lists():
     list_adder.add_player("C", ["1'", "3", "6"])
     assert set(data_viewer.get_players("1")) == {"A", "B"}
     assert set(data_viewer.get_players("1'")) == {"C"}
-    list_adder.merge_songs("1", "1'")
+    game_manager.merge_songs("1", "1'")
     assert set(data_viewer.get_players("1")) == {"A", "B", "C"}
     assert set(data_viewer.get_players("2")) == {"A", "B"}
     assert set(data_viewer.get_players("3")) == {"B", "C"}
@@ -46,8 +51,8 @@ def adding_lists():
     assert set(data_viewer.get_songs()) == {"1", "2", "3", "4", "5", "6"}
 
 def voting():
-    voter = Voter(True)
-    data_viewer = DataViewer(True)
+    voter = Voter()
+    data_viewer = DataViewer()
 
     voter.add_votes(["1", "2", "4"])
     assert data_viewer.get_votes("1") == 1
@@ -56,14 +61,21 @@ def voting():
     assert data_viewer.get_votes("4") == 1
     assert data_viewer.get_votes("5") == 0
     assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4", "5"])
+    voter.add_votes(["1", "2", "3", "4"])
     assert data_viewer.get_votes("1") == 2
     assert data_viewer.get_votes("2") == 2
     assert data_viewer.get_votes("3") == 1
     assert data_viewer.get_votes("4") == 2
-    assert data_viewer.get_votes("5") == 1
+    assert data_viewer.get_votes("5") == 0
     assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4", "5", "6"])
+    voter.add_votes(["1", "2", "3", "4", "6"])
+    assert data_viewer.get_votes("1") == 3
+    assert data_viewer.get_votes("2") == 3
+    assert data_viewer.get_votes("3") == 2
+    assert data_viewer.get_votes("4") == 3
+    assert data_viewer.get_votes("5") == 0
+    assert data_viewer.get_votes("6") == 1
+    voter.add_votes_to_song("5", 2)
     assert data_viewer.get_votes("1") == 3
     assert data_viewer.get_votes("2") == 3
     assert data_viewer.get_votes("3") == 2
@@ -71,8 +83,10 @@ def voting():
     assert data_viewer.get_votes("5") == 2
     assert data_viewer.get_votes("6") == 1
 
+
 def scoring():
-    scorer = Scorer(True)
+    scorer = Scorer()
+    scorer.make_scores()
 
     assert scorer.song_scores["1"] == 2/3
     assert scorer.song_scores["2"] == 1
@@ -103,7 +117,7 @@ def scoring():
     assert scorer.player_score["C"].songs["6"] == 0
     assert scorer.player_score["C"].total == pytest.approx(7/6)
     
-    assert scorer.make_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
+    assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
 def test_song_game_functions():
     '''
@@ -121,8 +135,13 @@ def test_song_game_functions():
     player C: list is 1, 3, 6
     '''
 
-    reset()
+    GameManager().reset_tables()
+    assert DataViewer().get_current_game() is None
+
+    new_game()
     adding_lists()
     voting()
     scoring()
-    reset()
+
+    GameManager().reset_tables()
+    assert DataViewer().get_current_game() is None

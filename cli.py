@@ -1,21 +1,24 @@
-from src.DataStore import DataStore
-from src.DataViewer import DataViewer
-from src.ListAdder import ListAdder
-from src.Voter import Voter
-from src.Scorer import Scorer
-from enum import Enum
+from src.Phases import Phase
+from src.DataUsers.GameManager import GameManager
+from src.DataUsers.DataViewer import DataViewer
+from src.DataUsers.ListAdder import ListAdder
+from src.DataUsers.Voter import Voter
+from src.DataUsers.Scorer import Scorer
 
-Phase = Enum('Phase', ['ADD_LIST', 'VOTE', 'SCORE'])
 commands = {
     "stop": {"phase": None, "arguments": None, "description": "closes the cli"},
     "help": {"phase": None, "arguments": "command_name", "description": "gives the description of given command"}, 
     "reset": {"phase": None, "arguments": None, "description": "resets the databases to be null"},
+    "new": {"phase": None, "arguments": "prompt", "description": "starts a new game with the given prompt"},
+    "prompt": {"phase": None, "arguments": None, "description": "gets prompt for current game"},
+    "phase": {"phase": None, "arguments": None, "description": "gets phase for current game"},
+    "advance": {"phase": None, "arguments": None, "description": "advances phase for current game"},
     "songs": {"phase": None, "arguments": None, "description": "lists all songs with index and youtube link"},
     "players": {"phase": None, "arguments": None, "description": "lists all players"},
     "votes": {"phase": None, "arguments": None, "description": "lists all songs with votes"},
     "youtube": {"phase": None, "arguments": "song_index", "description": "gets a link to a youtube search for the song of given index"},
     "list": {"phase": Phase.ADD_LIST, "arguments": "player <comma separated list of song names for the player>", "description": "adds the list for a given player"},
-    "merge": {"phase": Phase.ADD_LIST, "arguments": "index_1 index_2", "description": "merges the song from index_2 into index_1"},
+    "merge": {"phase": None, "arguments": "index_1 index_2", "description": "merges the song from index_2 into index_1"},
     "vote": {"phase": Phase.VOTE, "arguments": "space separated list of song indices", "description": "casts a vote for songs of the listed indices" },
     "vote-by-song": {"phase": Phase.VOTE, "arguments": "song_index number_of_votes", "description": "casts multiple votes for the song of the given index"},
     "tally": {"phase": Phase.SCORE, "arguments": None, "description": "gives a tally of players and final votes, ordered from most to least votes"},
@@ -36,30 +39,25 @@ def get_song_youtube_link(song_title: str) -> str:
     return youtube_format + cleaned_song_title
 
 class CLI:
-    def __init__(self, is_test=False):
-        self.is_test = is_test
-        self.data_viewer = DataViewer(is_test)
-        self.phase = None
-        self.check_phase(Phase.ADD_LIST)
+    def __init__(self):
+        self.game_manager = GameManager()
+        self.data_viewer = DataViewer()
+        self.list_adder = ListAdder()
+        self.voter = Voter()
+        self.scorer = Scorer()
 
-    def check_phase(self, phase: Phase):
-        if self.phase != phase:
-            if self.phase:
-                print("changing phases from {} to {}".format(self.phase.name, phase.name))
-            self.phase = phase
-            match phase:
-                case Phase.ADD_LIST:
-                    self.list_adder = ListAdder(self.is_test)
-                    self.voter = None
-                    self.scorer = None
-                case Phase.VOTE:
-                    self.list_adder = None
-                    self.voter = Voter(self.is_test)
-                    self.scorer = None
-                case Phase.SCORE:
-                    self.list_adder = None
-                    self.voter = None
-                    self.scorer = Scorer(self.is_test)
+    def check_phase(self, phase: Phase | None):
+        relevant_data_user = {
+            Phase.ADD_LIST: self.list_adder,
+            Phase.VOTE: self.voter,
+            Phase.SCORE: self.scorer,
+        }[phase]
+        index = self.data_viewer.get_current_game()
+        if not relevant_data_user.is_allowed(index):
+            print("changing phase to {}".format(phase.name))
+            self.game_manager.change_phase(index, phase)
+            if phase == Phase.SCORE:
+                relevant_data_user.make_scores()
 
     def run_command(self, command: str, arguments: str | None) -> str:
         if command in commands and commands[command]["phase"]:
@@ -73,8 +71,19 @@ class CLI:
                 arguments = command_help["arguments"] if command_help["arguments"] else ""
                 return "Phase: {}\nArguments: {}\nDescription: {}".format(phase, arguments, command_help["description"])
             case "reset":
-                DataStore(self.is_test).reset_tables()
+                self.game_manager.reset_tables()
                 return "all data wiped"
+            case "new":
+                self.game_manager.start_game(arguments)
+                return "started a new game"
+            case "prompt":
+                game_index = self.data_viewer.get_current_game()
+                return self.data_viewer.get_game_prompt(game_index)
+            case "phase":
+                game_index = self.data_viewer.get_current_game()
+                return self.data_viewer.get_game_phase(game_index).name
+            case "advance":
+                return self.game_manager.advance_current_phase().name
             case "songs":
                 songs = list(self.data_viewer.get_songs())
                 return "\n".join(str(i) + " - " + songs[i] + " (" + get_song_youtube_link(songs[i]) + ")" for i in range(len(songs)))
@@ -95,7 +104,7 @@ class CLI:
             case "merge":
                 index1, index2 = arguments.split()
                 songs = list(self.data_viewer.get_songs())
-                self.list_adder.merge_songs(songs[int(index1)], songs[int(index2)])
+                self.game_manager.merge_songs(songs[int(index1)], songs[int(index2)])
                 return "merged song {} into song {}".format(songs[int(index1)], songs[int(index2)])
             case "vote":
                 votes = set(arguments.split())
@@ -111,13 +120,18 @@ class CLI:
                 self.voter.add_votes_to_song(song, int(votes))
                 return "song {} now has {} votes".format(song, self.data_viewer.get_votes(song))
             case "tally":
-                return "\n".join(player + " - " + str(score) for player, score in self.scorer.make_tally_board())
+                return "\n".join(player + " - " + str(score) for player, score in self.scorer.get_tally_board())
             case "detail":
                 return str(self.scorer.get_detailed_breakdown(arguments))
             case _:
                 return "valid commands are " + ", ".join(commands.keys())
 
     def run_cli(self):
+        current_game = self.data_viewer.get_current_game()
+        if current_game is None:
+            print(self.run_command("new", "") + " with no prompt")
+        else:
+            print("current prompt is: " + self.run_command("prompt", current_game))
         print("players: " + self.run_command("players", None))
         print("songs and votes:")
         print(self.run_command("votes", None))
