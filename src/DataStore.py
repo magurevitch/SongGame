@@ -112,7 +112,7 @@ class DataStore:
 
     def add_votes_from_list(self, song_list: list[str]):
         game_index = self.get_current_game()
-        sql_song_list = "('" + "','".join(song_list) + "')"
+        sql_song_list = "('" + "','".join(map(lambda x: for_db(x), song_list)) + "')"
         cursor = self.connection.cursor()
         cursor.execute("UPDATE songs SET votes = votes + 1 WHERE song_name IN {} AND game_index = {};".format(sql_song_list, game_index))
         self.connection.commit()

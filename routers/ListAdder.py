@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.ApiModels import MergeSongs, PlayerList
+from src.ApiModels import PlayerList
 from src.DataUsers.ListAdder import ListAdder
 
 list_adder = ListAdder()

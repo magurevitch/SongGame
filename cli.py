@@ -22,7 +22,8 @@ commands = {
     "vote": {"phase": Phase.VOTE, "arguments": "space separated list of song indices", "description": "casts a vote for songs of the listed indices" },
     "vote-by-song": {"phase": Phase.VOTE, "arguments": "song_index number_of_votes", "description": "casts multiple votes for the song of the given index"},
     "tally": {"phase": Phase.SCORE, "arguments": None, "description": "gives a tally of players and final votes, ordered from most to least votes"},
-    "detail": {"phase": Phase.SCORE, "arguments": "player", "description": "gives a detailed list of which songs gave the given player points"}
+    "detail": {"phase": Phase.SCORE, "arguments": "player", "description": "gives a detailed list of which songs gave the given player points"},
+    "admin": {"phase": None, "arguments": None, "description": "puts the game in ADMIN phase"}
 }
 
 def format_title(raw_title: str) -> str:
@@ -123,6 +124,10 @@ class CLI:
                 return "\n".join(player + " - " + str(score) for player, score in self.scorer.get_tally_board())
             case "detail":
                 return str(self.scorer.get_detailed_breakdown(arguments))
+            case "admin":
+                game_index = self.data_viewer.get_current_game()
+                self.game_manager.change_phase(game_index, Phase.ADMIN)
+                return "in ADMIN phase"
             case _:
                 return "valid commands are " + ", ".join(commands.keys())
 

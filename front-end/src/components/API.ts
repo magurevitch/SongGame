@@ -10,7 +10,8 @@ class API {
     }
 
     static async post(module: string, method: string, data?: Object) {
-        return await axios.post(`${this.endpoint}/${module}/${method}`, data);
+        const response = await axios.post(`${this.endpoint}/${module}/${method}`, data);
+        return response.data;
     }
 
     static async getCurrentGame(): Promise<{game: number}> {
@@ -55,6 +56,18 @@ class API {
 
     static async getPlayerDetails(player: string): Promise<{breakdown: {total: number, songs: {[songName: string]: {score: number, votes: number, players: number}}}}> {
         return await this.get('score', `player/${player}`);
+    }
+
+    static async changeGamePhase(phase: Phase) {
+        return await this.post('admin', `phase/${Phase[phase]}`);
+    }
+
+    static async mergeSongs(sourceSong: string, targetSong: string): Promise<{songs: string[]}> {
+        return await this.post('admin', 'merge', {source_song: sourceSong, target_song: targetSong});
+    }
+
+    static async startNewGame(prompt: string): Promise<{game_index: number}> {
+        return await this.post('admin', 'start', {prompt});
     }
 }
 

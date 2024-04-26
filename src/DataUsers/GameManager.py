@@ -19,5 +19,6 @@ class GameManager(DataUser):
         phase = self.data_store.get_game_phase(index)
         return self.change_phase(index, phase.next())
 
-    def merge_songs(self, song1: str, song2: str):
+    def merge_songs(self, song1: str, song2: str) -> list[str]:
         self.data_store.merge_songs(song1, song2)
+        return self.data_store.get_songs()
