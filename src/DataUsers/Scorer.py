@@ -18,7 +18,8 @@ class Scorer(DataUser):
 
     def __init__(self) -> None:
         super().__init__()
-        self.make_scores()
+        if self.data_store.get_current_game() is not None:
+            self.make_scores()
     
     def make_scores(self):
         def make_song_score(song):

@@ -53,7 +53,7 @@ def test_run_command():
 
     assert cli.run_command("tally", None) == "2 - 2.0\n1 - 0.0"
 
-    assert cli.run_command("detail", "1") == "total: 0.0, songs: {'A - A': 0.0, 'B - B': 0.0}"
-    assert cli.run_command("detail", "2") == "total: 2.0, songs: {'A - A': 0.0, 'C - C': 2.0}"
+    assert cli.run_command("detail", "1") == "total: 0.0, songs: {'A - A': {'score': 0.0, 'votes': 1, 'players': 2}, 'B - B': {'score': 0.0, 'votes': 1, 'players': 1}}"
+    assert cli.run_command("detail", "2") == "total: 2.0, songs: {'A - A': {'score': 0.0, 'votes': 1, 'players': 2}, 'C - C': {'score': 2.0, 'votes': 3, 'players': 1}}"
 
     cli.run_command("reset", None)

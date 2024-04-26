@@ -88,33 +88,33 @@ def scoring():
     scorer = Scorer()
     scorer.make_scores()
 
-    assert scorer.song_scores["1"] == 2/3
-    assert scorer.song_scores["2"] == 1
-    assert scorer.song_scores["3"] == 1/2
-    assert scorer.song_scores["4"] == 2
-    assert scorer.song_scores["5"] == 1
-    assert scorer.song_scores["6"] == 0
+    assert scorer.song_scores["1"]["score"] == 2/3
+    assert scorer.song_scores["2"]["score"] == 1
+    assert scorer.song_scores["3"]["score"] == 1/2
+    assert scorer.song_scores["4"]["score"] == 2
+    assert scorer.song_scores["5"]["score"] == 1
+    assert scorer.song_scores["6"]["score"] == 0
 
     assert "A" in scorer.player_score
     assert set(scorer.player_score["A"].songs.keys()) == {"1", "2", "4"}
-    assert scorer.player_score["A"].songs["1"] == 2/3
-    assert scorer.player_score["A"].songs["2"] == 1
-    assert scorer.player_score["A"].songs["4"] == 2
+    assert scorer.player_score["A"].songs["1"]["score"] == 2/3
+    assert scorer.player_score["A"].songs["2"]["score"] == 1
+    assert scorer.player_score["A"].songs["4"]["score"] == 2
     assert scorer.player_score["A"].total == 11/3
 
     assert "B" in scorer.player_score
     assert set(scorer.player_score["B"].songs.keys()) == {"1", "2", "3", "5"}
-    assert scorer.player_score["B"].songs["1"] == 2/3
-    assert scorer.player_score["B"].songs["2"] == 1
-    assert scorer.player_score["B"].songs["3"] == 1/2
-    assert scorer.player_score["B"].songs["5"] == 1
+    assert scorer.player_score["B"].songs["1"]["score"] == 2/3
+    assert scorer.player_score["B"].songs["2"]["score"] == 1
+    assert scorer.player_score["B"].songs["3"]["score"] == 1/2
+    assert scorer.player_score["B"].songs["5"]["score"] == 1
     assert scorer.player_score["B"].total == 19/6
 
     assert "C" in scorer.player_score
     assert set(scorer.player_score["C"].songs.keys()) == {"1", "3", "6"}
-    assert scorer.player_score["C"].songs["1"] == 2/3
-    assert scorer.player_score["C"].songs["3"] == 1/2
-    assert scorer.player_score["C"].songs["6"] == 0
+    assert scorer.player_score["C"].songs["1"]["score"] == 2/3
+    assert scorer.player_score["C"].songs["3"]["score"] == 1/2
+    assert scorer.player_score["C"].songs["6"]["score"] == 0
     assert scorer.player_score["C"].total == pytest.approx(7/6)
     
     assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
