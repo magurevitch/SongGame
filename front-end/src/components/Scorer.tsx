@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import API from "./API";
+import { makeComparison } from "../utils";
 
 const Scorer = () => {
     const [tallyBoard, setTallyBoard] = useState<{player: string, score: number}[]>();
@@ -27,8 +28,9 @@ const Scorer = () => {
         </ol>
         <div>
             {featuredPlayer}
-            {breakdown?.total}
-            {Object.entries(breakdown?.songs || {}).map(([song, detail]) => <div>{song}: {detail.score} from {detail.votes} votes and {detail.players} players guessing</div>)}
+            <br/>
+            {breakdown?.total} points from {Object.keys(breakdown?.songs || {}).length} songs
+            {Object.entries(breakdown?.songs || {}).sort(makeComparison(entry => -entry[1].score)).map(([song, detail]) => <div>{song}: {detail.score} points from {detail.votes} votes and {detail.players} players guessing</div>)}
         </div>
     </div>;
 }
