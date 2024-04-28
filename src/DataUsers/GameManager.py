@@ -1,5 +1,7 @@
+from src.models.Song import Song
 from src.Phases import Phase
 from src.DataUsers.DataUser import DataUser
+from src.utils import extract_song
 
 class GameManager(DataUser):
     restricted_phase = Phase.ADMIN
@@ -19,6 +21,9 @@ class GameManager(DataUser):
         phase = self.data_store.get_game_phase(index)
         return self.change_phase(index, phase.next())
 
-    def merge_songs(self, song1: str, song2: str) -> list[str]:
-        self.data_store.merge_songs(song1, song2)
-        return self.data_store.get_songs()
+    def merge_songs(self, song1: Song, song2: Song) -> list[int]:
+        current_game = self.data_store.get_current_game()
+        source_song = self.data_store.get_song_index(current_game, song1)
+        target_song = self.data_store.get_song_index(current_game, song2)
+        self.data_store.merge_songs(source_song, target_song)
+        return self.data_store.get_all_song_indices()

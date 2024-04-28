@@ -1,3 +1,4 @@
+from src.models.Song import Song
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
@@ -21,100 +22,108 @@ def adding_lists():
     data_viewer = DataViewer()
     game_manager = GameManager()
 
-    list_adder.add_player("A", ["1", "2", "4"])
-    assert set(data_viewer.get_players("1")) == {"A"}
-    assert set(data_viewer.get_players("2")) == {"A"}
-    assert set(data_viewer.get_players("3")) == set()
-    assert set(data_viewer.get_players("4")) == {"A"}
-    assert set(data_viewer.get_players("5")) == set()
-    assert set(data_viewer.get_players("6")) == set()
-    list_adder.add_player("B", ["1", "2", "3", "5"])
-    assert set(data_viewer.get_players("1")) == {"A", "B"}
-    assert set(data_viewer.get_players("2")) == {"A", "B"}
-    assert set(data_viewer.get_players("3")) == {"B"}
-    assert set(data_viewer.get_players("4")) == {"A"}
-    assert set(data_viewer.get_players("5")) == {"B"}
-    assert set(data_viewer.get_players("6")) == set()
+    list_adder.add_player("A", [Song("song 1"), Song("song 2"), Song("song 4")])
+    assert set(data_viewer.get_players_from_song(Song("song 1"))) == {"A"}
+    assert set(data_viewer.get_players_from_song(Song("song 2"))) == {"A"}
+    assert set(data_viewer.get_players_from_song(Song("song 3"))) == set()
+    assert set(data_viewer.get_players_from_song(Song("song 4"))) == {"A"}
+    assert set(data_viewer.get_players_from_song(Song("song 5"))) == set()
+    assert set(data_viewer.get_players_from_song(Song("song 6"))) == set()
+    list_adder.add_player("B", [Song("song 1"), Song("song 2"), Song("song 3"), Song("song 5")])
+    assert set(data_viewer.get_players_from_song(Song("song 1"))) == {"A", "B"}
+    assert set(data_viewer.get_players_from_song(Song("song 2"))) == {"A", "B"}
+    assert set(data_viewer.get_players_from_song(Song("song 3"))) == {"B"}
+    assert set(data_viewer.get_players_from_song(Song("song 4"))) == {"A"}
+    assert set(data_viewer.get_players_from_song(Song("song 5"))) == {"B"}
+    assert set(data_viewer.get_players_from_song(Song("song 6"))) == set()
     #indicating that C has a type in song 1, and so manually merge the typo 1' into 1
-    list_adder.add_player("C", ["1'", "3", "6"])
-    assert set(data_viewer.get_players("1")) == {"A", "B"}
-    assert set(data_viewer.get_players("1'")) == {"C"}
-    game_manager.merge_songs("1", "1'")
-    assert set(data_viewer.get_players("1")) == {"A", "B", "C"}
-    assert set(data_viewer.get_players("2")) == {"A", "B"}
-    assert set(data_viewer.get_players("3")) == {"B", "C"}
-    assert set(data_viewer.get_players("4")) == {"A"}
-    assert set(data_viewer.get_players("5")) == {"B"}
-    assert set(data_viewer.get_players("6")) == {"C"}
+    list_adder.add_player("C", [Song("song 1'"), Song("song 3"), Song("song 6")])
+    assert set(data_viewer.get_players_from_song(Song("song 1"))) == {"A", "B"}
+    assert set(data_viewer.get_players_from_song(Song("song 1'"))) == {"C"}
+    game_manager.merge_songs(Song("song 1"), Song("song 1'"))
+    assert set(data_viewer.get_players_from_song(Song("song 1"))) == {"A", "B", "C"}
+    assert set(data_viewer.get_players_from_song(Song("song 2"))) == {"A", "B"}
+    assert set(data_viewer.get_players_from_song(Song("song 3"))) == {"B", "C"}
+    assert set(data_viewer.get_players_from_song(Song("song 4"))) == {"A"}
+    assert set(data_viewer.get_players_from_song(Song("song 5"))) == {"B"}
+    assert set(data_viewer.get_players_from_song(Song("song 6"))) == {"C"}
 
     assert set(data_viewer.get_all_players()) == {"A", "B", "C"}
-    assert set(data_viewer.get_songs()) == {"1", "2", "3", "4", "5", "6"}
+    assert set(song.song_title for song in data_viewer.get_songs()) == {"song 1", "song 2", "song 3", "song 4", "song 5", "song 6"}
+
+    assert set(data_viewer.get_song_indices()) == {1,2,3,4,5,7}
+    assert data_viewer.get_song_index(Song("song 1")) == 1
+    assert data_viewer.get_song_index(Song("song 2")) == 2
+    assert data_viewer.get_song_index(Song("song 3")) == 4
+    assert data_viewer.get_song_index(Song("song 4")) == 3
+    assert data_viewer.get_song_index(Song("song 5")) == 5
+    assert data_viewer.get_song_index(Song("song 6")) == 7
 
 def voting():
     voter = Voter()
     data_viewer = DataViewer()
 
-    voter.add_votes(["1", "2", "4"])
-    assert data_viewer.get_votes("1") == 1
-    assert data_viewer.get_votes("2") == 1
-    assert data_viewer.get_votes("3") == 0
-    assert data_viewer.get_votes("4") == 1
-    assert data_viewer.get_votes("5") == 0
-    assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4"])
-    assert data_viewer.get_votes("1") == 2
-    assert data_viewer.get_votes("2") == 2
-    assert data_viewer.get_votes("3") == 1
-    assert data_viewer.get_votes("4") == 2
-    assert data_viewer.get_votes("5") == 0
-    assert data_viewer.get_votes("6") == 0
-    voter.add_votes(["1", "2", "3", "4", "6"])
-    assert data_viewer.get_votes("1") == 3
-    assert data_viewer.get_votes("2") == 3
-    assert data_viewer.get_votes("3") == 2
-    assert data_viewer.get_votes("4") == 3
-    assert data_viewer.get_votes("5") == 0
-    assert data_viewer.get_votes("6") == 1
-    voter.add_votes_to_song("5", 2)
-    assert data_viewer.get_votes("1") == 3
-    assert data_viewer.get_votes("2") == 3
-    assert data_viewer.get_votes("3") == 2
-    assert data_viewer.get_votes("4") == 3
-    assert data_viewer.get_votes("5") == 2
-    assert data_viewer.get_votes("6") == 1
+    voter.add_votes_from_titles(["song 1", "song 2", "song 4"])
+    assert data_viewer.get_votes(1) == 1
+    assert data_viewer.get_votes(2) == 1
+    assert data_viewer.get_votes(4) == 0
+    assert data_viewer.get_votes(3) == 1
+    assert data_viewer.get_votes(5) == 0
+    assert data_viewer.get_votes(7) == 0
+    voter.add_votes_from_titles(["song 1", "song 2", "song 3", "song 4"])
+    assert data_viewer.get_votes_from_song(Song("song 1")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 2")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 3")) == 1
+    assert data_viewer.get_votes_from_song(Song("song 4")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 5")) == 0
+    assert data_viewer.get_votes_from_song(Song("song 6")) == 0
+    voter.add_votes_from_titles(["song 1", "song 2", "song 3", "song 4", "song 6"])
+    assert data_viewer.get_votes_from_song(Song("song 1")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 2")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 3")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 4")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 5")) == 0
+    assert data_viewer.get_votes_from_song(Song("song 6")) == 1
+    voter.add_votes_to_song(5, 2)
+    assert data_viewer.get_votes_from_song(Song("song 1")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 2")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 3")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 4")) == 3
+    assert data_viewer.get_votes_from_song(Song("song 5")) == 2
+    assert data_viewer.get_votes_from_song(Song("song 6")) == 1
 
 
 def scoring():
     scorer = Scorer()
     scorer.make_scores()
 
-    assert scorer.song_scores["1"]["score"] == 2/3
-    assert scorer.song_scores["2"]["score"] == 1
-    assert scorer.song_scores["3"]["score"] == 1/2
-    assert scorer.song_scores["4"]["score"] == 2
-    assert scorer.song_scores["5"]["score"] == 1
-    assert scorer.song_scores["6"]["score"] == 0
+    assert scorer.song_scores[1]["score"] == 2/3
+    assert scorer.song_scores[2]["score"] == 1
+    assert scorer.song_scores[4]["score"] == 1/2
+    assert scorer.song_scores[3]["score"] == 2
+    assert scorer.song_scores[5]["score"] == 1
+    assert scorer.song_scores[7]["score"] == 0
 
     assert "A" in scorer.player_score
-    assert set(scorer.player_score["A"].songs.keys()) == {"1", "2", "4"}
-    assert scorer.player_score["A"].songs["1"]["score"] == 2/3
-    assert scorer.player_score["A"].songs["2"]["score"] == 1
-    assert scorer.player_score["A"].songs["4"]["score"] == 2
+    assert set(scorer.player_score["A"].songs.keys()) == {"song 1 - Unknown", "song 2 - Unknown", "song 4 - Unknown"}
+    assert scorer.player_score["A"].songs["song 1 - Unknown"]["score"] == 2/3
+    assert scorer.player_score["A"].songs["song 2 - Unknown"]["score"] == 1
+    assert scorer.player_score["A"].songs["song 4 - Unknown"]["score"] == 2
     assert scorer.player_score["A"].total == 11/3
 
     assert "B" in scorer.player_score
-    assert set(scorer.player_score["B"].songs.keys()) == {"1", "2", "3", "5"}
-    assert scorer.player_score["B"].songs["1"]["score"] == 2/3
-    assert scorer.player_score["B"].songs["2"]["score"] == 1
-    assert scorer.player_score["B"].songs["3"]["score"] == 1/2
-    assert scorer.player_score["B"].songs["5"]["score"] == 1
+    assert set(scorer.player_score["B"].songs.keys()) == {"song 1 - Unknown", "song 2 - Unknown", "song 3 - Unknown", "song 5 - Unknown"}
+    assert scorer.player_score["B"].songs["song 1 - Unknown"]["score"] == 2/3
+    assert scorer.player_score["B"].songs["song 2 - Unknown"]["score"] == 1
+    assert scorer.player_score["B"].songs["song 3 - Unknown"]["score"] == 1/2
+    assert scorer.player_score["B"].songs["song 5 - Unknown"]["score"] == 1
     assert scorer.player_score["B"].total == 19/6
 
     assert "C" in scorer.player_score
-    assert set(scorer.player_score["C"].songs.keys()) == {"1", "3", "6"}
-    assert scorer.player_score["C"].songs["1"]["score"] == 2/3
-    assert scorer.player_score["C"].songs["3"]["score"] == 1/2
-    assert scorer.player_score["C"].songs["6"]["score"] == 0
+    assert set(scorer.player_score["C"].songs.keys()) == {"song 1 - Unknown", "song 3 - Unknown", "song 6 - Unknown"}
+    assert scorer.player_score["C"].songs["song 1 - Unknown"]["score"] == 2/3
+    assert scorer.player_score["C"].songs["song 3 - Unknown"]["score"] == 1/2
+    assert scorer.player_score["C"].songs["song 6 - Unknown"]["score"] == 0
     assert scorer.player_score["C"].total == pytest.approx(7/6)
     
     assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]

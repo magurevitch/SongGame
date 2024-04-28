@@ -1,3 +1,4 @@
+from src.models.Song import Song
 from src.Phases import Phase
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
@@ -22,26 +23,28 @@ def test_new_game():
     assert set(data_viewer.get_all_players()) == set()
     assert set(data_viewer.get_songs()) == set()
 
-    list_adder.add_player("A", ["1", "2"])
-    list_adder.add_player("B", ["1", "2"])
+    list_adder.add_player("A", [Song("1", "1"), Song("2")])
+    list_adder.add_player("B", [Song("1", "1"), Song("2")])
 
     assert set(data_viewer.get_all_players()) == {"A", "B"}
-    assert set(data_viewer.get_songs()) == {"1", "2"}
-    assert set(data_viewer.get_players("1")) == {"A", "B"}
-    assert set(data_viewer.get_players("2")) == {"A", "B"}
+    assert set(data_viewer.get_song_indices()) == {1, 2}
+    assert set(str(song) for song in data_viewer.get_songs()) == {"1 - 1", "2 - Unknown"}
+    assert set(data_viewer.get_players(1)) == {"A", "B"}
+    assert set(data_viewer.get_players(2)) == {"A", "B"}
 
     game_manager.start_game("second")
 
     assert data_viewer.get_current_game() == 2
     assert data_viewer.get_game_prompt(2) == "second"
 
-    list_adder.add_player("A", ["1", "3"])
-    list_adder.add_player("C", ["1", "3"])
+    list_adder.add_player("A", [Song("1", "1"), Song("3")])
+    list_adder.add_player("C", [Song("1", "1"), Song("3")])
 
     assert set(data_viewer.get_all_players()) == {"A", "C"}
-    assert set(data_viewer.get_songs()) == {"1", "3"}
-    assert set(data_viewer.get_players("1")) == {"A", "C"}
-    assert set(data_viewer.get_players("3")) == {"A", "C"}
+    assert set(data_viewer.get_song_indices()) == {3, 4}
+    assert set(str(song) for song in data_viewer.get_songs()) == {"1 - 1", "3 - Unknown"}
+    assert set(data_viewer.get_players(3)) == {"A", "C"}
+    assert set(data_viewer.get_players(4)) == {"A", "C"}
 
     game_manager.reset_tables()
 

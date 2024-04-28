@@ -4,6 +4,7 @@ from src.DataUsers.DataViewer import DataViewer
 from src.DataUsers.ListAdder import ListAdder
 from src.DataUsers.Voter import Voter
 from src.DataUsers.Scorer import Scorer
+from src.utils import extract_song
 
 commands = {
     "stop": {"phase": None, "arguments": None, "description": "closes the cli"},
@@ -26,18 +27,9 @@ commands = {
     "admin": {"phase": None, "arguments": None, "description": "puts the game in ADMIN phase"}
 }
 
-def format_title(raw_title: str) -> str:
-    song_name, artist = raw_title.split("-", 1)
-    return "{} - {}".format(song_name.strip(), artist.strip())
-
 def find_arguments(raw_input:str) -> list[str, None]:
     command, *arguments = raw_input.split(" ", 1)
     return command.strip(), None if arguments == [] else arguments[0]
-
-def get_song_youtube_link(song_title: str) -> str:
-    youtube_format = "https://www.youtube.com/results?search_query="
-    cleaned_song_title = song_title.replace(" ", "+").replace("'", "%27")
-    return youtube_format + cleaned_song_title
 
 class CLI:
     def __init__(self):
@@ -87,20 +79,20 @@ class CLI:
                 return self.game_manager.advance_current_phase().name
             case "songs":
                 songs = list(self.data_viewer.get_songs())
-                return "\n".join(str(i) + " - " + songs[i] + " (" + get_song_youtube_link(songs[i]) + ")" for i in range(len(songs)))
+                return "\n".join(str(i) + " - " + str(songs[i]) + " (" + songs[i].get_song_youtube_link() + ")" for i in range(len(songs)))
             case "players":
                 players = self.data_viewer.get_all_players()
                 return ", ".join(players)
             case "votes":
                 songs = list(self.data_viewer.get_songs())
-                return "\n".join(song + ": " + str(self.data_viewer.get_votes(song)) for song in songs)
+                return "\n".join(str(song) + ": " + str(self.data_viewer.get_votes_from_song(song)) for song in songs)
             case "youtube":
                 songs = list(self.data_viewer.get_songs())
-                song_title = songs[int(arguments)]
-                return get_song_youtube_link(song_title)
+                song = songs[int(arguments)]
+                return song.get_song_youtube_link()
             case "list":
                 player, songs = arguments.split(" ", 1)
-                self.list_adder.add_player(player, [format_title(title) for title in songs.split(",")])
+                self.list_adder.add_player(player, [extract_song(title) for title in songs.split(",")])
                 return "added songs for player " + player
             case "merge":
                 index1, index2 = arguments.split()
@@ -112,14 +104,15 @@ class CLI:
                 songs = list(self.data_viewer.get_songs())
                 if len(votes) > len(songs):
                     raise IndexError()
-                self.voter.add_votes([songs[int(i)] for i in votes])
-                return "added votes for {}".format(", ".join(songs[int(i)] for i in votes))
+                self.voter.add_votes([self.data_viewer.get_song_index(songs[int(i)]) for i in votes])
+                return "added votes for {}".format(", ".join(str(songs[int(i)]) for i in votes))
             case "vote-by-song":
                 songs = list(self.data_viewer.get_songs())
                 index, votes = arguments.split()
                 song = songs[int(index)]
-                self.voter.add_votes_to_song(song, int(votes))
-                return "song {} now has {} votes".format(song, self.data_viewer.get_votes(song))
+                index = self.data_viewer.get_song_index(song)
+                self.voter.add_votes_to_song(index, int(votes))
+                return "song {} now has {} votes".format(song, self.data_viewer.get_votes_from_song(song))
             case "tally":
                 return "\n".join(player + " - " + str(score) for player, score in self.scorer.get_tally_board())
             case "detail":

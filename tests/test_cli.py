@@ -1,19 +1,9 @@
-from cli import CLI, format_title, find_arguments, get_song_youtube_link
-
-def test_format_title():
-    assert format_title("A-B") == "A - B"
-    assert format_title("A-B-C") == "A - B-C"
-    assert format_title(" A-B ") == "A - B"
-    assert format_title("A   -   B") == "A - B"
+from cli import CLI, find_arguments
 
 def test_find_arguments():
     assert find_arguments("merge 1 1'") == ("merge", "1 1'")
     assert find_arguments("show-score") == ("show-score", None)
     assert find_arguments("add-list person song 1, song 2") == ("add-list", "person song 1, song 2")
-
-def test_youtube():
-    song_title = "Barrett's Privateers - Stan Rogers"
-    assert get_song_youtube_link(song_title) == "https://www.youtube.com/results?search_query=Barrett%27s+Privateers+-+Stan+Rogers"
 
 def test_run_command():
     cli = CLI()
@@ -36,9 +26,9 @@ def test_run_command():
     cli.run_command("list", "2 A-A', C-C")
 
     assert cli.run_command("players", None) == "1, 2"
-    assert cli.run_command("votes", None) == "A - A: 0\nA - A': 0\nB - B: 0\nC - C: 0"
+    assert cli.run_command("votes", None) == "A - A: 0\nB - B: 0\nA - A': 0\nC - C: 0"
 
-    cli.run_command("merge", "0 1")
+    cli.run_command("merge", "0 2")
 
     assert cli.run_command("players", None) == "1, 2"
     assert cli.run_command("votes", None) == "A - A: 0\nB - B: 0\nC - C: 0"

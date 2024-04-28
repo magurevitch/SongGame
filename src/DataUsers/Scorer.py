@@ -26,12 +26,13 @@ class Scorer(DataUser):
             votes = self.data_store.get_votes(song)
             players = len(list(self.data_store.get_players(song)))
             return {"score": calculate_score(votes, players), "votes": votes, "players": players}
-        self.song_scores = {song: make_song_score(song) for song in self.data_store.get_songs()}
+        self.song_scores = {song: make_song_score(song) for song in self.data_store.get_all_song_indices()}
         
         self.player_score = {player: Result() for player in self.data_store.get_all_players()}
         for song, player in self.data_store.get_player_lists():
             self.player_score[player].total += self.song_scores[song]["score"]
-            self.player_score[player].songs[song] = self.song_scores[song]
+            song_object = self.data_store.get_song_details(song)
+            self.player_score[player].songs[str(song_object)] = self.song_scores[song]
 
     def get_tally_board(self) -> list[tuple[str, float]]:
         return sorted([(player, result.total) for player, result in self.player_score.items()], key=lambda x: -x[1])
