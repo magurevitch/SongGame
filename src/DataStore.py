@@ -80,7 +80,7 @@ class DataStore:
     
     def get_all_song_indices(self) -> list[int]:
         game_index = self.get_current_game()
-        return self.fetch_many_values("SELECT song_index FROM songs WHERE game_index = {};".format(game_index))
+        return self.fetch_many_values("SELECT song_index FROM songs WHERE game_index = {} ORDER BY song_title, artist;".format(game_index))
     
     def get_song_details(self, song_index: int) -> Song:
         cursor = self.connection.cursor()

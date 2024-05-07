@@ -1,6 +1,5 @@
 from src.models.Song import Song
 from src.DataUsers.DataUser import DataUser
-from src.utils import extract_song
 
 class DataViewer(DataUser):
     def get_current_game(self):
