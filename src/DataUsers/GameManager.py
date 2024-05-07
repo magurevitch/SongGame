@@ -20,6 +20,11 @@ class GameManager(DataUser):
         index = self.data_store.get_current_game()
         phase = self.data_store.get_game_phase(index)
         return self.change_phase(index, phase.next())
+    
+    def rename_song(self, song: Song, new_song: Song):
+        current_game = self.data_store.get_current_game()
+        song_index = self.data_store.get_song_index(current_game, song)
+        self.data_store.rename_song(song_index, new_song)
 
     def merge_songs(self, song1: Song, song2: Song) -> list[int]:
         current_game = self.data_store.get_current_game()

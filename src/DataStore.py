@@ -93,7 +93,7 @@ class DataStore:
         return self.fetch_many_values("SELECT DISTINCT player FROM player_lists WHERE game_index = {};".format(game_index))
 
     def get_players(self, song_index: int) -> list[str]:
-        return self.fetch_many_values("SELECT player FROM player_lists WHERE song_index={};".format(song_index))
+        return self.fetch_many_values("SELECT DISTINCT player FROM player_lists WHERE song_index={};".format(song_index))
     
     def get_votes(self, song_index: int) -> int:
         return self.fetch_single_value("SELECT votes FROM songs WHERE song_index = {};".format(song_index))
@@ -101,7 +101,7 @@ class DataStore:
     def get_player_lists(self) -> list[tuple[int, str]]:
         game_index = self.get_current_game()
         cursor = self.connection.cursor()
-        res = cursor.execute("SELECT song_index, player from player_lists WHERE game_index = {};".format(game_index))
+        res = cursor.execute("SELECT DISTINCT song_index, player from player_lists WHERE game_index = {};".format(game_index))
         return res.fetchall()
     
     def start_new_game(self, prompt: str):
@@ -135,6 +135,11 @@ class DataStore:
     def add_votes_to_song(self, song_index: int, votes: int):
         cursor = self.connection.cursor()
         cursor.execute("UPDATE songs SET votes = votes + {} WHERE song_index = {};".format(votes, song_index))
+        self.connection.commit()
+
+    def rename_song(self, song_index: int, new_song: Song):
+        cursor = self.connection.cursor()
+        cursor.execute("UPDATE songs SET song_name='{}', artist={} WHERE song_index={};".format(new_song.song_title, "'" + new_song.artist + "'" if new_song.artist else "NULL", song_index))
         self.connection.commit()
 
     def merge_songs(self, source_song: int, target_song: int):
