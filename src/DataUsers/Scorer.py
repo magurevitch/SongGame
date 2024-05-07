@@ -18,6 +18,7 @@ class Scorer(DataUser):
 
     def __init__(self) -> None:
         super().__init__()
+        self.is_scoring = False
         if self.data_store.get_current_game() is not None:
             self.make_scores()
     
@@ -26,6 +27,10 @@ class Scorer(DataUser):
             votes = self.data_store.get_votes(song)
             players = len(list(self.data_store.get_players(song)))
             return {"score": calculate_score(votes, players), "votes": votes, "players": players}
+        
+        if self.is_scoring:
+            return
+        self.is_scoring = True
         self.song_scores = {song: make_song_score(song) for song in self.data_store.get_all_song_indices()}
         
         self.player_score = {player: Result() for player in self.data_store.get_all_players()}
@@ -33,6 +38,7 @@ class Scorer(DataUser):
             self.player_score[player].total += self.song_scores[song]["score"]
             song_object = self.data_store.get_song_details(song)
             self.player_score[player].songs[str(song_object)] = self.song_scores[song]
+        self.is_scoring = False
 
     def get_tally_board(self) -> list[tuple[str, float]]:
         return sorted([(player, result.total) for player, result in self.player_score.items()], key=lambda x: -x[1])

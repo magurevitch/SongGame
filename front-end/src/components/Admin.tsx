@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import API from "./API";
 import Phase from "../Phase";
+import AdminSong from "./AdminSong";
 
 const Admin: React.FunctionComponent<{setPhase: any}> = ({setPhase}) => {
     const [players, setPlayers] = useState<string[]>([]);
@@ -15,7 +16,7 @@ const Admin: React.FunctionComponent<{setPhase: any}> = ({setPhase}) => {
         <div>Players: {players.join(", ")}</div>
         <div>Songs: 
             <ol>
-                {songs.map(song => <li>{song}</li>)}
+                {songs.map(song => <AdminSong song={song} />)}
             </ol>
         </div>
         <div>
