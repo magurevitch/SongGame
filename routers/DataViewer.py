@@ -23,7 +23,8 @@ def get_all_players():
 
 @router.get("/songs")
 def get_songs():
-    return {"songs": [str(song) for song in data_viewer.get_songs()]}
+    print(data_viewer.get_songs())
+    return {"songs": data_viewer.get_songs()}
 
 @router.get("/players/{song}")
 def get_players(song_string: str):

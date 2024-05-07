@@ -8,6 +8,5 @@ router = APIRouter(prefix="/list")
 
 @router.post("/add")
 def add_player_list(request: PlayerList):
-    cleaned_songs = [extract_song(song) for song in request.songs]
-    list_adder.add_player(request.player, cleaned_songs)
+    list_adder.add_player(request.player, request.songs)
     return {}

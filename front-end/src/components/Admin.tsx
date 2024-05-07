@@ -2,10 +2,11 @@ import React, { useEffect, useState } from "react";
 import API from "./API";
 import Phase from "../Phase";
 import AdminSong from "./AdminSong";
+import { Song } from "../Models";
 
 const Admin: React.FunctionComponent<{setPhase: any}> = ({setPhase}) => {
     const [players, setPlayers] = useState<string[]>([]);
-    const [songs, setSongs] = useState<string[]>([]);
+    const [songs, setSongs] = useState<Song[]>([]);
 
     useEffect(() => {
         API.getAllPlayers().then(response => setPlayers(response.players));

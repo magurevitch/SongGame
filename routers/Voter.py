@@ -8,7 +8,7 @@ router = APIRouter(prefix="/vote")
 
 @router.post("/")
 def add_votes(request: AddVotes):
-    voter.add_votes([voter.get_song_index(extract_song(song)) for song in request.songs])
+    voter.add_votes([voter.get_song_index(song) for song in request.songs])
     return {}
 
 @router.post("/{song}")

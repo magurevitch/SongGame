@@ -19,7 +19,7 @@ commands = {
     "votes": {"phase": None, "arguments": None, "description": "lists all songs with votes"},
     "youtube": {"phase": None, "arguments": "song_index", "description": "gets a link to a youtube search for the song of given index"},
     "list": {"phase": Phase.ADD_LIST, "arguments": "player <comma separated list of song names for the player>", "description": "adds the list for a given player"},
-    "rename": {"phase": None, "arguments": "index song_name - artist", "description": "renames song at that index to the new parameters"},
+    "rename": {"phase": None, "arguments": "index song_title - artist", "description": "renames song at that index to the new parameters"},
     "merge": {"phase": None, "arguments": "index_1 index_2", "description": "merges the song from index_2 into index_1"},
     "vote": {"phase": Phase.VOTE, "arguments": "space separated list of song indices", "description": "casts a vote for songs of the listed indices" },
     "vote-by-song": {"phase": Phase.VOTE, "arguments": "song_index number_of_votes", "description": "casts multiple votes for the song of the given index"},

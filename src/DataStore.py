@@ -29,7 +29,7 @@ class DataStore:
             CREATE TABLE IF NOT EXISTS songs (
                 song_index INTEGER PRIMARY KEY,
                 game_index INTEGER NOT NULL,
-	            song_name TEXT NOT NULL,
+	            song_title TEXT NOT NULL,
                 artist TEXT,
    	            votes INTEGER DEFAULT 0,
                 FOREIGN KEY(game_index) REFERENCES games(game_index)
@@ -75,7 +75,7 @@ class DataStore:
     
     def get_song_index(self, game_index: int, song: Song) -> int:
         artist_query = "" if song.artist is None else " AND artist = {}".format(for_db(song.artist))
-        sql_query = "SELECT song_index FROM songs WHERE game_index = {} AND song_name = {}{}".format(game_index, for_db(song.song_title), artist_query)
+        sql_query = "SELECT song_index FROM songs WHERE game_index = {} AND song_title = {}{}".format(game_index, for_db(song.song_title), artist_query)
         return self.fetch_single_value(sql_query)
     
     def get_all_song_indices(self) -> list[int]:
@@ -84,9 +84,9 @@ class DataStore:
     
     def get_song_details(self, song_index: int) -> Song:
         cursor = self.connection.cursor()
-        res = cursor.execute("SELECT song_name, artist FROM songs WHERE song_index = {};".format(song_index))
-        song_name, artist = res.fetchone()
-        return Song(song_name, artist)
+        res = cursor.execute("SELECT song_title, artist FROM songs WHERE song_index = {};".format(song_index))
+        song_title, artist = res.fetchone()
+        return Song(song_title, artist)
     
     def get_all_players(self) -> list[str]:
         game_index = self.get_current_game()
@@ -121,7 +121,7 @@ class DataStore:
         for song in songs:
             song_index = self.get_song_index(game_index, song)
             if not song_index:
-                song_index = self.fetch_single_value("INSERT INTO songs (game_index, song_name, artist) SELECT {}, {}, {} RETURNING song_index;".format(game_index, for_db(song.song_title), for_db(song.artist)))
+                song_index = self.fetch_single_value("INSERT INTO songs (game_index, song_title, artist) SELECT {}, {}, {} RETURNING song_index;".format(game_index, for_db(song.song_title), for_db(song.artist)))
             cursor.execute("INSERT INTO player_lists (game_index, song_index, player) SELECT {}, {}, '{}';".format(game_index, song_index, player))
         self.connection.commit()
 
@@ -139,7 +139,7 @@ class DataStore:
 
     def rename_song(self, song_index: int, new_song: Song):
         cursor = self.connection.cursor()
-        cursor.execute("UPDATE songs SET song_name='{}', artist={} WHERE song_index={};".format(new_song.song_title, "'" + new_song.artist + "'" if new_song.artist else "NULL", song_index))
+        cursor.execute("UPDATE songs SET song_title='{}', artist={} WHERE song_index={};".format(new_song.song_title, "'" + new_song.artist + "'" if new_song.artist else "NULL", song_index))
         self.connection.commit()
 
     def merge_songs(self, source_song: int, target_song: int):

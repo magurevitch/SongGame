@@ -15,12 +15,12 @@ def change_game_phase(phase: str):
 
 @router.post("/merge")
 def merge_songs(request: MergeSongs):
-    songs = game_manager.merge_songs(extract_song(request.source_song), extract_song(request.target_song))
+    songs = game_manager.merge_songs(request.source_song, request.target_song)
     return {"songs": songs}
 
 @router.post("/rename")
 def rename_song(request: MergeSongs):
-    game_manager.rename_song(extract_song(request.source_song), extract_song(request.target_song))
+    game_manager.rename_song(request.source_song, request.target_song)
     return {}
 
 @router.post("/start")

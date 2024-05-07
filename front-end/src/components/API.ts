@@ -1,5 +1,6 @@
 import axios from 'axios';
 import Phase from '../Phase';
+import { Song } from '../Models';
 
 class API {
     static endpoint = "http://127.0.0.1:8000";
@@ -30,7 +31,7 @@ class API {
         return await this.get('viewer', 'players');
     }
 
-    static async getAllSongs(): Promise<{songs: string[]}> {
+    static async getAllSongs(): Promise<{songs: Song[]}> {
         return await this.get('viewer', 'songs');
     }
 
@@ -38,11 +39,11 @@ class API {
         return await this.get('viewer', `votes/${song}`);
     }
 
-    static async addPlayerList(player: string, songs: string[]) {
+    static async addPlayerList(player: string, songs: Song[]) {
         return await this.post('list', 'add', {player, songs})
     }
 
-    static async vote(songs: string[]) {
+    static async vote(songs: Song[]) {
         return await this.post('vote', '', {songs});
     }
 
@@ -62,7 +63,7 @@ class API {
         return await this.post('admin', `phase/${Phase[phase]}`);
     }
 
-    static async mergeSongs(sourceSong: string, targetSong: string): Promise<{songs: string[]}> {
+    static async mergeSongs(sourceSong: Song, targetSong: Song): Promise<{songs: string[]}> {
         return await this.post('admin', 'merge', {source_song: sourceSong, target_song: targetSong});
     }
 
