@@ -67,7 +67,7 @@ class API {
         return await this.post('admin', 'rename', {source_song: sourceSong, target_song: targetSong})
     }
 
-    static async mergeSongs(sourceSong: Song, targetSong: Song): Promise<{songs: string[]}> {
+    static async mergeSongs(sourceSong: Song, targetSong: Song): Promise<{songs: Song[]}> {
         return await this.post('admin', 'merge', {source_song: sourceSong, target_song: targetSong});
     }
 
