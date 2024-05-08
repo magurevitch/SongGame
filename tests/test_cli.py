@@ -26,13 +26,13 @@ def test_run_command():
     cli.run_command("list", "2 A-A', C-C'")
 
     assert cli.run_command("players", None) == "1, 2"
-    assert cli.run_command("votes", None) == "A - A: 0\nB - B: 0\nA - A': 0\nC - C': 0"
+    assert cli.run_command("votes", None) == "A - A: 0\nA - A': 0\nB - B: 0\nC - C': 0"
 
     cli.run_command("rename", "3 C-C")
 
-    assert cli.run_command("votes", None) == "A - A: 0\nB - B: 0\nA - A': 0\nC - C: 0"
+    assert cli.run_command("votes", None) == "A - A: 0\nA - A': 0\nB - B: 0\nC - C: 0"
 
-    cli.run_command("merge", "0 2")
+    cli.run_command("merge", "0 1")
 
     assert cli.run_command("players", None) == "1, 2"
     assert cli.run_command("votes", None) == "A - A: 0\nB - B: 0\nC - C: 0"

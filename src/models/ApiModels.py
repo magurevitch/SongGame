@@ -1,8 +1,9 @@
+from typing import Union
 from pydantic import BaseModel
 
 class Song(BaseModel):
     song_title: str
-    artist: str
+    artist: Union[str, None]
 
 class MergeSongs(BaseModel):
     source_song: Song

@@ -185,8 +185,6 @@ def test_rename():
 
     game_manager.rename_song(Song("1st"), Song("First"))
 
-    print(data_viewer.get_songs()[0])
-    print(Song("First"))
     assert data_viewer.get_songs() == [Song("First")]
     assert data_viewer.get_song_index(Song("1st")) == None
     assert data_viewer.get_song_index(Song("First")) == 1
