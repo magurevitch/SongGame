@@ -23,7 +23,7 @@ const Admin: React.FunctionComponent<{setPhase: (phase: Phase) => void}> = ({set
             });
         }
     };
-{}
+
     useEffect(() => {
         API.getAllPlayers().then(response => setPlayers(response.players));
         API.getAllSongs().then(response => setSongs(response.songs));

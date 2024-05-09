@@ -1,3 +1,4 @@
+import asyncio
 from src.models.Song import Song
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
@@ -92,10 +93,9 @@ def voting():
     assert data_viewer.get_votes_from_song(Song("song 5")) == 2
     assert data_viewer.get_votes_from_song(Song("song 6")) == 1
 
-
 def scoring():
     scorer = Scorer()
-    scorer.make_scores()
+    asyncio.run(scorer.make_scores())
 
     assert scorer.song_scores[1]["score"] == 2/3
     assert scorer.song_scores[2]["score"] == 1

@@ -1,3 +1,4 @@
+import asyncio
 from src.Phases import Phase
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
@@ -51,7 +52,7 @@ class CLI:
             print("changing phase to {}".format(phase.name))
             self.game_manager.change_phase(index, phase)
             if phase == Phase.SCORE:
-                relevant_data_user.make_scores()
+                asyncio.run(relevant_data_user.make_scores())
 
     def run_command(self, command: str, arguments: str | None) -> str:
         if command in commands and commands[command]["phase"]:
