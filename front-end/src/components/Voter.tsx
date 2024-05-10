@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import API from "./API";
+import { Song } from "../Models";
 
 const Voter = () => {
-    const [songs, setSongs] = useState<string[]>([]);
-    const [chosenSongs, setChosenSongs] = useState<Set<string>>(new Set());
+    const [songs, setSongs] = useState<Song[]>([]);
+    const [chosenSongs, setChosenSongs] = useState<Set<Song>>(new Set());
     
     useEffect(() => {
         API.getAllSongs().then(response => setSongs(response.songs));
@@ -16,18 +17,19 @@ const Voter = () => {
     };
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        let index: number = parseInt(event.target.value);
         if(event.target.checked) {
-            chosenSongs.add(event.target.value);
+            chosenSongs.add(songs[index]);
         } else {
-            chosenSongs.delete(event.target.value);
+            chosenSongs.delete(songs[index]);
         }
         setChosenSongs(chosenSongs);
     };
 
     return <form onSubmit={handleSubmit}>
-        {songs.map(song => <label>
-            <input type="checkbox" key={song} value={song} onChange={handleChange}/>
-            {song}
+        {songs.map((song,index) => <label>
+            <input type="checkbox" key={index} value={index} onChange={handleChange}/>
+            {song.song_title} - {song.artist}
             <br/>
         </label>)}
         <button type="submit">Submit</button>

@@ -5,6 +5,7 @@ import ListAdder from './components/ListAdder';
 import Voter from './components/Voter';
 import Scorer from './components/Scorer';
 import API from './components/API';
+import Admin from './components/Admin';
 
 function App() {
   const [currentGame, setCurrentGame] = useState<number>(1);
@@ -28,6 +29,8 @@ function App() {
         return <Voter />
       case Phase.SCORE:
         return <Scorer />
+      case Phase.ADMIN:
+        return <Admin setPhase={setPhase} />
     }
   };
 
@@ -38,7 +41,7 @@ function App() {
       Game:
       {currentGame} - {prompt}
       <br/>
-      Phase: 
+      Phase:
       {Phase[phase]}
       <br/>
       {choosePhase(phase)}

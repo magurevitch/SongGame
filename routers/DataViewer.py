@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from src.DataUsers.DataViewer import DataViewer
+from src.utils import extract_song
 
 data_viewer = DataViewer()
 router = APIRouter(prefix="/viewer")
@@ -22,12 +23,15 @@ def get_all_players():
 
 @router.get("/songs")
 def get_songs():
-    return {"songs": list(data_viewer.get_songs())}
+    return {"songs": data_viewer.get_songs()}
 
 @router.get("/players/{song}")
-def get_players(song: str):
-    return {"players": list(data_viewer.get_players(song))}
+def get_players(song_string: str):
+    song = extract_song(song_string)
+    return {"players": list(data_viewer.get_players_from_song(song))}
 
 @router.get("/votes/{song}")
-def get_votes(song: str):
-    return {"votes": data_viewer.get_votes(song)}
+def get_vote(song_string: str):
+    song = extract_song(song_string)
+    song_index = data_viewer.get_song_index(song)
+    return {"votes": data_viewer.get_votes(song_index)}

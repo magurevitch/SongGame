@@ -1,13 +1,14 @@
 from fastapi import APIRouter
-from src.ApiModels import AddVotes, MassVote
+from src.models.ApiModels import AddVotes, MassVote
 from src.DataUsers.Voter import Voter
+from src.utils import extract_song
 
 voter = Voter()
 router = APIRouter(prefix="/vote")
 
 @router.post("/")
 def add_votes(request: AddVotes):
-    voter.add_votes(request.songs)
+    voter.add_votes([voter.get_song_index(song) for song in request.songs])
     return {}
 
 @router.post("/{song}")

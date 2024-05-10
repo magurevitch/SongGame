@@ -1,8 +1,10 @@
 import axios from 'axios';
 import Phase from '../Phase';
+import { Song } from '../Models';
 
 class API {
-    static endpoint = "http://127.0.0.1:8000";
+    static endpoint = "http://10.0.0.87:8000";
+    //static endpoint = "http://127.0.0.1:8000";
 
     static async get(module: string, method: string) {
         const response = await axios.get(`${this.endpoint}/${module}/${method}`)
@@ -10,7 +12,8 @@ class API {
     }
 
     static async post(module: string, method: string, data?: Object) {
-        return await axios.post(`${this.endpoint}/${module}/${method}`, data);
+        const response = await axios.post(`${this.endpoint}/${module}/${method}`, data);
+        return response.data;
     }
 
     static async getCurrentGame(): Promise<{game: number}> {
@@ -29,7 +32,7 @@ class API {
         return await this.get('viewer', 'players');
     }
 
-    static async getAllSongs(): Promise<{songs: string[]}> {
+    static async getAllSongs(): Promise<{songs: Song[]}> {
         return await this.get('viewer', 'songs');
     }
 
@@ -37,11 +40,11 @@ class API {
         return await this.get('viewer', `votes/${song}`);
     }
 
-    static async addPlayerList(player: string, songs: string[]) {
+    static async addPlayerList(player: string, songs: Song[]) {
         return await this.post('list', 'add', {player, songs})
     }
 
-    static async vote(songs: string[]) {
+    static async vote(songs: Song[]) {
         return await this.post('vote', '', {songs});
     }
 
@@ -55,6 +58,22 @@ class API {
 
     static async getPlayerDetails(player: string): Promise<{breakdown: {total: number, songs: {[songName: string]: {score: number, votes: number, players: number}}}}> {
         return await this.get('score', `player/${player}`);
+    }
+
+    static async changeGamePhase(phase: Phase) {
+        return await this.post('admin', `phase/${Phase[phase]}`);
+    }
+
+    static async renameSong(sourceSong: Song, targetSong: Song) {
+        return await this.post('admin', 'rename', {source_song: sourceSong, target_song: targetSong})
+    }
+
+    static async mergeSongs(sourceSong: Song, targetSong: Song): Promise<{songs: Song[]}> {
+        return await this.post('admin', 'merge', {source_song: sourceSong, target_song: targetSong});
+    }
+
+    static async startNewGame(prompt: string): Promise<{game_index: number}> {
+        return await this.post('admin', 'start', {prompt});
     }
 }
 
