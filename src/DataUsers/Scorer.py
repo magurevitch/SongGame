@@ -17,12 +17,6 @@ def calculate_score(votes: int, players: int):
 
 class Scorer(DataUser):
     restricted_phase = Phase.SCORE
-
-    def __init__(self) -> None:
-        super().__init__()
-        self.is_scoring = False
-        if self.data_store.get_current_game() is not None:
-            asyncio.run(self.make_scores())
     
     @lock
     async def make_scores(self):
@@ -39,8 +33,14 @@ class Scorer(DataUser):
             song_object = self.data_store.get_song_details(song)
             self.player_score[player].songs[str(song_object)] = self.song_scores[song]
 
+    def get_player_score(self):
+        if hasattr(self, 'player_score'):
+            return self.player_score
+        asyncio.run(self.make_scores())
+        return self.player_score
+
     def get_tally_board(self) -> list[tuple[str, float]]:
-        return sorted([(player, result.total) for player, result in self.player_score.items()], key=lambda x: -x[1])
+        return sorted([(player, result.total) for player, result in self.get_player_score().items()], key=lambda x: -x[1])
     
     def get_detailed_breakdown(self, player: str):
-        return self.player_score[player]
+        return self.get_player_score()[player]

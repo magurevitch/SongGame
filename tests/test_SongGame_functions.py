@@ -1,4 +1,3 @@
-import asyncio
 from src.models.Song import Song
 from src.DataUsers.GameManager import GameManager
 from src.DataUsers.DataViewer import DataViewer
@@ -95,7 +94,9 @@ def voting():
 
 def scoring():
     scorer = Scorer()
-    asyncio.run(scorer.make_scores())
+
+    #this is also testing if the tally board can happen without initiating it
+    assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
 
     assert scorer.song_scores[1]["score"] == 2/3
     assert scorer.song_scores[2]["score"] == 1
@@ -126,8 +127,6 @@ def scoring():
     assert scorer.player_score["C"].songs["song 6 - Unknown"]["score"] == 0
     assert scorer.player_score["C"].total == pytest.approx(7/6)
     
-    assert scorer.get_tally_board() == [("A", 11/3), ("B", 19/6), ("C", pytest.approx(7/6))]
-
 def test_song_game_functions():
     '''
     songs:

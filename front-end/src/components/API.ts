@@ -3,7 +3,8 @@ import Phase from '../Phase';
 import { Song } from '../Models';
 
 class API {
-    static endpoint = "http://127.0.0.1:8000";
+    static endpoint = "http://10.0.0.87:8000";
+    //static endpoint = "http://127.0.0.1:8000";
 
     static async get(module: string, method: string) {
         const response = await axios.get(`${this.endpoint}/${module}/${method}`)
