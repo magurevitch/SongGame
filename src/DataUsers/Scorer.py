@@ -1,3 +1,4 @@
+import asyncio
 from src.DataUsers.DataUser import DataUser
 from src.Phases import Phase
 from src.utils import lock
@@ -21,7 +22,7 @@ class Scorer(DataUser):
         super().__init__()
         self.is_scoring = False
         if self.data_store.get_current_game() is not None:
-            self.make_scores()
+            asyncio.run(self.make_scores())
     
     @lock
     async def make_scores(self):

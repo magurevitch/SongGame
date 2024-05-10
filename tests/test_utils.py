@@ -48,5 +48,5 @@ async def test_lock():
     assert counter.counter == 1
 
     #testing lock does not stop two different functions
-    await asyncio.gather(counter.increase(), counter.decrease())
+    await asyncio.gather(counter.increase(), counter.decrease(), counter.decrease())
     assert counter.counter == 1
